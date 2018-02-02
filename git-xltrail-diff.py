@@ -56,7 +56,7 @@ if __name__ == '__main__':
             diffs.append({
                 'a': '--- a/' + workbook1 + '/VBA/' + module1,
                 'b': '+++ b/' + workbook1 + '/VBA/' + module1,
-                'diff': '\n'.join([(Fore.RED if line.startswith('-') else (Fore.GREEN if line.startswith('+') else '')) + line.strip('\n') for line in list(unified_diff(workbook2_modules[module1].split('\n'), vba1.split('\n')))[2:]])
+                'diff': '\n'.join([(Fore.RED if line.startswith('-') else (Fore.GREEN if line.startswith('+') else (Fore.CYAN if line.startswith('@') else ''))) + line.strip('\n') for line in list(unified_diff(workbook2_modules[module1].split('\n'), vba1.split('\n')))[2:]])
             })
 
     for module2, vba2 in workbook2_modules.items():
@@ -70,8 +70,9 @@ if __name__ == '__main__':
 
     colorama.init(strip=False)
 
+    print(Style.BRIGHT + 'diff --xltrail ' + 'a/' + workbook1 + ' b/' + workbook1)
     for diff in diffs:
-        print(diff['a'])
-        print(diff['b'])
+        print(Style.BRIGHT + diff['a'])
+        print(Style.BRIGHT + diff['b'])
         print(diff['diff'])
         print('')
