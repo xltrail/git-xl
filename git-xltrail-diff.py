@@ -71,7 +71,7 @@ if __name__ == '__main__':
     colorama.init(strip=False)
 
     for diff in diffs:
-        sys.stdout.writeline(diff['a'])
+        print(diff['a'])
         print(diff['b'])
         print(diff['diff'])
         print('')

@@ -6,10 +6,17 @@ import subprocess
 
 VERSION = '0.0.1'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
+GIT_XLTRAIL_DIFF = 'python C:/Users/Bjoern/Developer/git-xltrail/git-xltrail-diff.py'
 
-# #.gitattributes
-# #*.xls* diff=xltrail
-# #*.xla* diff=xltrail
+GIT_ATTRIBUTES = [
+	'*.xls diff=xltrail',
+	'*.xlt diff=xltrail',
+	'*.xla diff=xltrail',
+	'*.xlm diff=xltrail',
+	'*.xlsx diff=xltrail',
+	'*.xlsm diff=xltrail',
+	'*.xlsb diff=xltrail'
+]
 
 class Installer:
 
@@ -25,9 +32,34 @@ class Installer:
 
 	def install(self):
 		if self.mode == 'local':
-			subprocess.call(['git', 'config', 'diff.xltrail.command', '"test"'], cwd=self.path)
+			subprocess.run(['git', 'config', 'diff.xltrail.command', GIT_XLTRAIL_DIFF], cwd=self.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+			subprocess.run(['git', 'config', 'core.attributesfile', GIT_XLTRAIL_DIFF], cwd=self.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+
+			#git config --global core.attributesfile <path>
 		else:
-			subprocess.call(['git', 'config', '--global', 'diff.xltrail.command', '"test"'])
+			# check if core.attributesfile is configures
+			r = subprocess.run(['git', 'config', '--global', '--get', 'core.attributesfile'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+			global_attributes = r.stdout.split('\n')[0]
+			if not global_attributes:
+				# put .gitattributes in same folder as global .gitconfig
+				r = subprocess.run(['git', 'config', '--global', '--list', '--show-origin'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+				f = r.stdout.split('\n')[0]
+				r = subprocess.run(['git', 'config', '--global', '--list'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+				p = r.stdout.split('\n')[0]
+				global_attributes = f[:f.index(p)][5:][:-11] + '.gitattributes'
+				subprocess.run(['git', 'config', '--global', 'core.attributesfile', global_attributes])
+
+			if os.path.exists(global_attributes):
+				with open(global_attributes, 'r') as f:
+					content = f.read().split('\n')
+			else:
+				content = []
+			content = list(set(content).union(set(GIT_ATTRIBUTES)))
+			with open(global_attributes, 'w') as f:
+				f.writelines('\n'.join(content))
+
+			# subprocess.run(['git', 'config', '--global', 'diff.xltrail.command', GIT_XLTRAIL_DIFF], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+			# r = subprocess.run(['git', 'config', '--global', '--get', 'core.attributesfile'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
 	def uninstall(self):
 		pass
