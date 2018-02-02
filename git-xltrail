@@ -1,27 +1,33 @@
 #!/usr/bin/env python
 import sys
 import os
+import subprocess
 
 
 VERSION = '0.0.1'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 
+# #.gitattributes
+# #*.xls* diff=xltrail
+# #*.xla* diff=xltrail
 
 class Installer:
 
-	class Mode:
-		LOCAL = 'LOCAL'
-		GLOBAL = 'GLOBAL'
-
-	def __init__(self, mode=Mode.GLOBAL, path=None):
-		if mode == Mode.GLOBAL and path:
+	def __init__(self, mode='global', path=None):
+		if mode == 'global' and path:
 			raise ValueError('must not specify repository path when installing globally')
 
-		if mode == Mode.LOCAL and not path:
+		if mode == 'local' and not path:
 			raise ValueError('must specify repository path when installing locally')
 
+		self.mode = mode
+		self.path = path
+
 	def install(self):
-		pass
+		if self.mode == 'local':
+			subprocess.call(['git', 'config', 'diff.xltrail.command', '"test"'], cwd=self.path)
+		else:
+			subprocess.call(['git', 'config', '--global', 'diff.xltrail.command', '"test"'])
 
 	def uninstall(self):
 		pass
@@ -39,10 +45,26 @@ class CommandParser:
 		command = self.args[0]
 		args = self.args[1:]
 
+		# do not process if command does not exist
 		if not hasattr(self, command):
 			return print(f"""Error: unknown command "{command}" for "git-xltrail"\nRun 'git-xltrail --help' for usage.""")
 
+		# execute command
 		getattr(self, command)(*args)
+
+	
+	def push(self, *args):
+		pass
+
+	def install(self, *args):
+		if args:
+			if args[0] == '--local':
+				installer = Installer(mode='local', path=os.getcwd())
+			else:
+				return print(f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
+		else:
+			installer = Installer(mode='global')
+		installer.install()
 
 
 	def help(self, *args):
@@ -92,81 +114,3 @@ Commands
 if __name__ == '__main__':
 	command_parser = CommandParser()
 	command_parser.execute()
-
-
-# if len(sys.argv) < 2:
-# 	raise ValueError('Invalid arguments')
-	
-# command = sys.argv[1]
-# repo = os.getcwd()
-# XLTRAIL_TAG = '[diff "xltrail"]'
-# XLTRAIL_COMMAND = 'python C:/Users/Bjoern/Developer/git-xltrail/xldiff.py'
-
-
-# if not '.git' in os.listdir(repo):
-# 	raise ValueError('Not a Git repository')
-
-
-# #.gitattributes
-# #*.xls* diff=xltrail
-# #*.xla* diff=xltrail
-
-
-# def configure_git_config(path):
-# 	# Configures: .git/config
-# 	# Ensures that this section is part of the config file:
-# 	# <XLTRAIL_TAG>
-# 	#     command = <XLTRAIL_COMMAND>
-# 	with open(path, 'r') as f:
-# 		content = f.read().split('\n')
-# 	if XLTRAIL_TAG not in content:
-# 		content.append(XLTRAIL_TAG)
-# 		content.append(f'\tcommand={XLTRAIL_COMMAND}')
-# 		with open(path, 'w') as f:
-# 			f.writelines([f'{line}\n'for line in content])
-
-# def configure_git_attributes(path):
-# 	# Configures: .gitattributes
-# 	# Ensures that this section is part of the config file:
-# 	# <XLTRAIL_TAG>
-# 	#     command = <XLTRAIL_COMMAND>
-# 	with open(path, 'r') as f:
-# 		content = f.read().split('\n')
-# 	if XLTRAIL_TAG not in content:
-# 		content.append(XLTRAIL_TAG)
-# 		content.append(f'\tcommand={XLTRAIL_COMMAND}')
-# 		with open(path, 'w') as f:
-# 			f.writelines([f'{line}\n'for line in content])
-
-
-
-# if command == 'install':
-# 	global
-# 	if len(sys.argv) == 3 and sys.argv[2] == '--local':
-# 		pass
-
-
-# if command == 'track':
-# 	if len(sys.argv) < 3:
-# 		sys.exit(1)
-# 	configure_git_config(os.path.join(repo, '.git', 'config'))
-# 	configure_git_attributes(os.path.join(repo, '.gitattributes'))
-	
-# if command == 'untrack':
-# 	if len(sys.argv) < 3:
-# 		sys.exit(1)
-# 	configure_git_config(os.path.join(repo, '.git', 'config'))
-# 	configure_git_attributes(os.path.join(repo, '.gitattributes'))
-
-# if command == 'help':
-# 	# 1. set up .gitignore
-# 	# 2. set up custom differ (.git/config + .gitattributes)
-# 	# 3. set up pre-push hook (git pull)
-# 	pass
-
-
-# elif command == 'uninstall':
-# 	# undo 'install'
-# 	pass	
-
-
