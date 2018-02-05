@@ -20,11 +20,14 @@ install:
 build_script:
   - pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x%MONIKER%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
 
-after_build:
-  - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
+# after_build:
+#   - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
 
 # test_script:
 #   - bash --login script/cibuild
+
+matrix:
+  fast_finish: true
 
 artifacts:
   - path: dist\git-xltrail-diff-x86.exe
