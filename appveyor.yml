@@ -27,8 +27,8 @@ build_script:
 #   - bash --login script/cibuild
 
 artifacts:
-  - path: git-xltrail-diff-x86.exe
-  - path: git-xltrail-diff-x64.exe
+  - path: dist\git-xltrail-diff-x86.exe
+  - path: dist\git-xltrail-diff-x64.exe
   # - path: git-lfs-windows-*.exe
 
 # on_finish:
