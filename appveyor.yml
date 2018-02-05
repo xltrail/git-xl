@@ -1,0 +1,25 @@
+skip_branch_with_pr: true
+
+matrix:
+  - PYTHON: "C:\Python36"
+    PYTHON_VERSION: "3.6.4"
+    PYTHON_ARCH: "32"
+
+  - PYTHON: "C:\Python36-x64"
+    PYTHON_VERSION: "3.6.4"
+    PYTHON_ARCH: "64"
+
+
+build_script:
+  - pyinstaller --onefile .\git-xltrail-diff.py --version-file .\git-xltrail-version-info.py --icon=.\windows\git-xltrail-logo.ico
+
+# after_build:
+#   - iscc script\windows-installer\inno-setup-git-lfs-installer.iss
+
+# test_script:
+#   - bash --login script/cibuild
+
+# artifacts:
+#   - path: git-xltrail-x86.exe
+#   - path: git-xltrail-x64.exe
+#   - path: git-lfs-windows-*.exe
