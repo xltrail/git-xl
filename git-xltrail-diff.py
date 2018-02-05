@@ -10,9 +10,6 @@ import colorama
 from colorama import Fore, Back, Style, init
 
 
-EXCEL_FILE_EXTENSIONS = ('xlsb', 'xls', 'xlsm', 'xla', 'xlt', 'xlam',)
-
-
 def get_vba(workbook):
     vba_parser = VBA_Parser(workbook)
     vba_modules = vba_parser.extract_all_macros() if vba_parser.detect_vba_macros() else []
@@ -36,6 +33,10 @@ def get_vba(workbook):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 8:
+        print('Unexpected number of arguments')
+        sys.exit(0)
+
     _, workbook_name, workbook_b, _, _, workbook_a, _ , _ = sys.argv
 
     path_workbook_a = os.path.abspath(workbook_a)

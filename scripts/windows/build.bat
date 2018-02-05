@@ -1,0 +1,2 @@
+pyinstaller --onefile ..\..\git-xltrail-diff.py --version-file .\git-xltrail-version-info.py --icon=git-xltrail-logo.ico
+pyinstaller --onefile ..\..\git-xltrail.py --version-file .\git-xltrail-version-info.py --icon=git-xltrail-logo.ico
