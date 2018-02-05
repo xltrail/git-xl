@@ -5,10 +5,12 @@ environment:
     - PYTHON: C:\Python36
       PYTHON_VERSION: 3.6.4
       PYTHON_ARCH: 32
+      MONIKER: 86
 
     - PYTHON: C:\Python36-x64
       PYTHON_VERSION: 3.6.4
       PYTHON_ARCH: 64
+      MONIKER: 64
 
 install:
   - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
@@ -16,7 +18,7 @@ install:
 
 
 build_script:
-  - pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x%PYTHON_ARCH%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
+  - pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x%MONIKER%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
 
 # after_build:
 #   - iscc script\windows-installer\inno-setup-git-lfs-installer.iss
