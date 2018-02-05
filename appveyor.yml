@@ -27,3 +27,6 @@ build_script:
 #   - path: git-xltrail-x86.exe
 #   - path: git-xltrail-x64.exe
 #   - path: git-lfs-windows-*.exe
+
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
