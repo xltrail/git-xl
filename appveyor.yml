@@ -24,10 +24,10 @@ build_script:
 # test_script:
 #   - bash --login script/cibuild
 
-# artifacts:
-#   - path: git-xltrail-x86.exe
-#   - path: git-xltrail-x64.exe
-#   - path: git-lfs-windows-*.exe
+artifacts:
+  - path: git-xltrail-diff-x86.exe
+  - path: git-xltrail-diff-x64.exe
+  # - path: git-lfs-windows-*.exe
 
 # on_finish:
 #   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
