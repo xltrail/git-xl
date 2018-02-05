@@ -9,9 +9,8 @@ matrix:
     PYTHON_VERSION: "3.6.4"
     PYTHON_ARCH: "64"
 
-
 install:
-  pip install -r requirements.txt
+  - pip install -r requirements.txt
 
 
 build_script:
