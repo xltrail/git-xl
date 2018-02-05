@@ -15,7 +15,7 @@ install:
 
 
 build_script:
-  - pyinstaller --onefile .\git-xltrail-diff.py --version-file .\git-xltrail-version-info.py --icon=.\windows\git-xltrail-logo.ico
+  - pyinstaller --onefile .\git-xltrail-diff.py --version-file .\git-xltrail-version-info.py --icon .\windows\git-xltrail-logo.ico
 
 # after_build:
 #   - iscc script\windows-installer\inno-setup-git-lfs-installer.iss
