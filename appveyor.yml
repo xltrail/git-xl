@@ -2,20 +2,21 @@ skip_branch_with_pr: true
 
 environment:
   matrix:
-    - PYTHON: "C:\Python36"
-      PYTHON_VERSION: "3.6.4"
-      PYTHON_ARCH: "32"
+    - PYTHON: C:\Python36
+      PYTHON_VERSION: 3.6.4
+      PYTHON_ARCH: 32
 
-    - PYTHON: "C:\Python36-x64"
-      PYTHON_VERSION: "3.6.4"
-      PYTHON_ARCH: "64"
+    - PYTHON: C:\Python36-x64
+      PYTHON_VERSION: 3.6.4
+      PYTHON_ARCH: 64
 
 install:
+  - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
   - pip install -r requirements.txt
 
 
 build_script:
-  - pyinstaller --onefile .\git-xltrail-diff.py --version-file .\git-xltrail-version-info.py --icon .\windows\git-xltrail-logo.ico
+  - pyinstaller --onefile .\git-xltrail-diff.py --version-file .\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
 
 # after_build:
 #   - iscc script\windows-installer\inno-setup-git-lfs-installer.iss
@@ -28,5 +29,5 @@ build_script:
 #   - path: git-xltrail-x64.exe
 #   - path: git-lfs-windows-*.exe
 
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+# on_finish:
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
