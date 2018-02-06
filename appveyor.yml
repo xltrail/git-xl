@@ -10,6 +10,10 @@ build_script:
   - mv dist\git-xltrail-diff-x86.exe git-xltrail-diff-x86.exe
   - C:\Python36-x64\Scripts\pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x64.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
   - mv dist\git-xltrail-diff-x64.exe git-xltrail-diff-x64.exe
+  - C:\Python36\Scripts\pyinstaller --onefile .\git-xltrail.py --name git-xltrail-x86.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
+  - mv dist\git-xltrail-x86.exe git-xltrail-x86.exe
+  - C:\Python36-x64\Scripts\pyinstaller --onefile .\git-xltrail.py --name git-xltrail-x64.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
+  - mv dist\git-xltrail-x64.exe git-xltrail-x64.exe
 
 after_build:
   - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
@@ -17,6 +21,8 @@ after_build:
 artifacts:
   - path: git-xltrail-diff-x86.exe
   - path: git-xltrail-diff-x64.exe
+  - path: git-xltrail-x86.exe
+  - path: git-xltrail-x64.exe
 
 
 # on_finish:
