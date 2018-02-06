@@ -26,9 +26,6 @@ build_script:
 # test_script:
 #   - bash --login script/cibuild
 
-before_deploy:
-    - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
-
 matrix:
   fast_finish: true
 
@@ -36,6 +33,10 @@ artifacts:
   - path: dist\git-xltrail-diff-x86.exe
   - path: dist\git-xltrail-diff-x64.exe
   # - path: git-lfs-windows-*.exe
+
+
+on_success_all:
+    - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
 
 # on_finish:
 #   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
