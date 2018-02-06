@@ -1,42 +1,22 @@
 skip_branch_with_pr: true
 
-environment:
-  matrix:
-    - PYTHON: C:\Python36
-      PYTHON_VERSION: 3.6.4
-      PYTHON_ARCH: 32
-      MONIKER: 86
-
-    - PYTHON: C:\Python36-x64
-      PYTHON_VERSION: 3.6.4
-      PYTHON_ARCH: 64
-      MONIKER: 64
-
 install:
-  - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
-  - pip install -r requirements.txt
-
+  - C:\Python36\Scripts\pip install -r requirements.txt
+  - C:\Python36-x64\Scripts\pip install -r requirements.txt
 
 build_script:
-  - pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x%MONIKER%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
+  - C:\Python36\Scripts\pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x86.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
+  - mv dist\git-xltrail-diff-x86.exe git-xltrail-diff-x86.exe
+  - C:\Python36-x64\Scripts\pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x64.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
+  - mv dist\git-xltrail-diff-x64.exe git-xltrail-diff-x64.exe
 
-# after_build:
-#   - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
-
-# test_script:
-#   - bash --login script/cibuild
-
-matrix:
-  fast_finish: true
+after_build:
+  - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
 
 artifacts:
-  - path: dist\git-xltrail-diff-x86.exe
-  - path: dist\git-xltrail-diff-x64.exe
-  # - path: git-lfs-windows-*.exe
+  - path: git-xltrail-diff-x86.exe
+  - path: git-xltrail-diff-x64.exe
 
 
-# on_success:
-#     - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
-
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+# on_finish:
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
