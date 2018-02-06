@@ -1,21 +1,21 @@
 #define MyAppName "Git xltrail"
 
-#define PathToX86Binary "..\git-xltrail-x86.exe"
+#define PathToX86Binary "..\..\git-xltrail-x86.exe"
 #ifnexist PathToX86Binary
   #pragma error PathToX86Binary + " does not exist, please build it first."
 #endif
 
-#define PathToX64Binary "..\git-xltrail-x64.exe"
+#define PathToX64Binary "..\..\git-xltrail-x64.exe"
 #ifnexist PathToX64Binary
   #pragma error PathToX64Binary + " does not exist, please build it first."
 #endif
 
-#define PathToDiffX86Binary "..\git-xltrail-diff-x86.exe"
+#define PathToDiffX86Binary "..\..\git-xltrail-diff-x86.exe"
 #ifnexist PathToDiffX86Binary
   #pragma error PathToDiffX86Binary + " does not exist, please build it first."
 #endif
 
-#define PathToDiffX64Binary "..\git-xltrail-diff-x64.exe"
+#define PathToDiffX64Binary "..\..\git-xltrail-diff-x64.exe"
 #ifnexist PathToDiffX64Binary
   #pragma error PathToDiffX64Binary + " does not exist, please build it first."
 #endif
