@@ -6,7 +6,7 @@ install:
   - C:\Python36-x64\Scripts\pip install -r requirements.txt
 
 build_script:
-  - python .\scripts\windows\update-version-info.py
+  - C:\Python36\python .\scripts\windows\update-version-info.py
   - C:\Python36\Scripts\pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x86.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
   - mv dist\git-xltrail-diff-x86.exe git-xltrail-diff-x86.exe
   - C:\Python36-x64\Scripts\pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x64.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
