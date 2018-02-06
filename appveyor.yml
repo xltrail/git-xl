@@ -1,5 +1,6 @@
 skip_branch_with_pr: true
 
+version: '0.1.2.{build}'
 install:
   - cinst InnoSetup -y
   - C:\Python36\Scripts\pip install -r requirements.txt
@@ -25,7 +26,6 @@ artifacts:
   - path: git-xltrail-x86.exe
   - path: git-xltrail-x64.exe
   - path: git-xltrail-windows-*.exe
-
 
 # on_finish:
 #   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

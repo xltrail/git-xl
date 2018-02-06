@@ -5,14 +5,8 @@ import re
 base_directory = os.path.join('scripts', 'windows')
 
 # read from version info
-with open('versioninfo.json', 'r') as f:
-    version_info = json.loads(f.read())
-
-major = version_info['version']['major']
-minor = version_info['version']['minor']
-patch = version_info['version']['patch']
-build = os.getenv('APPVEYOR_BUILD_NUMBER', 0)
-
+version = os.getenv('APPVEYOR_BUILD_VERSION', '0.0.0.0')
+major, minor, patch, build = version.split('.')
 
 s = f"""VSVersionInfo(
   ffi=FixedFileInfo(

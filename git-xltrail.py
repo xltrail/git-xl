@@ -4,7 +4,7 @@ import os
 import subprocess
 
 
-VERSION = '0.1.0'
+VERSION = '0.0.0'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
 
@@ -113,8 +113,8 @@ class CommandParser:
 		getattr(self, command)(*args)
 
 	
-	def push(self, *args):
-		pass
+	def version(self, *args):
+		print(f'git-xltrail/{VERSION} (Python {PYTHON_VERSION})')
 
 	def install(self, *args):
 		if args:
@@ -150,17 +150,15 @@ Without any options, git xltrail install will setup the Excel differ and
 * --local:
     Sets the .gitignore filters and the git-diff Excel drop-in replacement
     in the local repository, instead of the global git config (~/.gitconfig).""")
-		elif arg == 'push':
-			print("""git xltrail push [options] <remote> [<ref>...]
-git xltrail push <remote> [<ref>...]
-
-Push the Excel workbook files to the Git remote, automatically resolving version
-conflicts by pulling from remote before the push.
-
-Options:
-
-* --dry-run:
-    Print version conflicts that the push would solve, without actually pushing them.""")
+		elif arg == 'uninstall':
+			print("""git xltrail uninstall [options]\n
+Uninstalls Git xltrail:\n
+Options:\n
+Without any options, git xltrail uninstall will remove the git-diff drop-in 
+replacement for Excel files and .gitignore globally.\n
+* --local:
+    Removes the .gitignore filters and the git-diff Excel drop-in replacement
+    in the local repository, instead globally.""")
 		elif arg is None:
 			print(f"""git-xltrail/{VERSION} (windows amd64; Python {PYTHON_VERSION})
 git xltrail <command> [<args>]\n
@@ -171,9 +169,9 @@ association with a Git repository. Git xltrail:
 Commands
 --------\n
 * git xltrail install:
-    Install Git xltrail configuration.
-* git xltrail push:
-    Push workbook to remote, ignoring version conflicts.
+    Install Git xltrail.
+* git xltrail uninstall:
+    Uninstall Git xltrail.
 * git xltrail version:
     Report the version number.""")
 		else:
