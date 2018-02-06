@@ -4,7 +4,7 @@ import os
 import subprocess
 
 
-VERSION = '0.0.1'
+VERSION = '0.1.0'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
 

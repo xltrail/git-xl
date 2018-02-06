@@ -3,3 +3,4 @@
 *.exe
 build/
 dist/
+git-xltrail-version-info.py
