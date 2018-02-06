@@ -26,6 +26,9 @@ build_script:
 # test_script:
 #   - bash --login script/cibuild
 
+before_deploy:
+    - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
+
 matrix:
   fast_finish: true
 
