@@ -1,6 +1,7 @@
 skip_branch_with_pr: true
 
 install:
+  - cinst InnoSetup -y
   - C:\Python36\Scripts\pip install -r requirements.txt
   - C:\Python36-x64\Scripts\pip install -r requirements.txt
 
