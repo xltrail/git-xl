@@ -11,7 +11,7 @@ with open('versioninfo.json', 'r') as f:
 major = version_info['version']['major']
 minor = version_info['version']['minor']
 patch = version_info['version']['patch']
-build = version_info['version']['build']
+build = os.getenv('APPVEYOR_BUILD_NUMBER', 0)
 
 
 s = f"""VSVersionInfo(
