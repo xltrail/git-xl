@@ -17,12 +17,15 @@ build_script:
 
 after_build:
   - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
+  - mv scripts\windows\git-xltrail-windows-*.exe git-xltrail-windows-*.exe
+  - 
 
 artifacts:
   - path: git-xltrail-diff-x86.exe
   - path: git-xltrail-diff-x64.exe
   - path: git-xltrail-x86.exe
   - path: git-xltrail-x64.exe
+  - path: git-xltrail-windows-*.exe
 
 
 # on_finish:
