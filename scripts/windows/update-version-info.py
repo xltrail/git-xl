@@ -9,7 +9,7 @@ build = os.getenv('APPVEYOR_BUILD_NUMBER', '0')
 tag = os.getenv('APPVEYOR_REPO_TAG_NAME ', '0.0.0')
 commit = os.environ['APPVEYOR_REPO_COMMIT'][:7] if os.getenv('APPVEYOR_REPO_COMMIT') else 'dev'
 
-major, minor, patch, build = tag.split('.')
+major, minor, patch = tag.split('.')
 
 
 s = f"""VSVersionInfo(
