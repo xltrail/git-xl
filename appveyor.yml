@@ -1,6 +1,17 @@
 skip_branch_with_pr: true
 
-version: '{build}'
+init:
+  # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
+  - ps: >-
+      if ($env:APPVEYOR_REPO_TAG -eq "true")
+      {
+        Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
+      }
+      else
+      {
+        Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
+      }
+
 install:
   - cinst InnoSetup -y
   - C:\Python36\Scripts\pip install -r requirements.txt
