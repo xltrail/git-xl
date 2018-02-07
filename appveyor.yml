@@ -51,7 +51,7 @@ deploy:
   description: 'Git xltrail $(APPVEYOR_REPO_TAG_NAME)'
   auth_token:
     secure: u1oi+34ucFzW+B5tKlGUMP2NjPISw4G61InbYVF3qYq6onAC4+rA92XRn+aDhMEW
-  artifact: git-xltrail-windows-*.exe
+  artifact: /.*\.exe/
   draft: false
   prerelease: false
   on:
