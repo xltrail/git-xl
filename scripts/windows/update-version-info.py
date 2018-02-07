@@ -8,7 +8,6 @@ base_directory = os.path.join('scripts', 'windows')
 build = os.getenv('APPVEYOR_BUILD_NUMBER', '0') 
 version = os.getenv('APPVEYOR_BUILD_VERSION', '0.0.0')
 commit = os.environ['APPVEYOR_REPO_COMMIT'][:7] if os.getenv('APPVEYOR_REPO_COMMIT') else 'dev'
-major, minor, patch = version.split('.')
 
 print('-----------')
 print('Prepare version information')
@@ -16,6 +15,8 @@ print('')
 print('Version tag: %s' % version)
 print('Build number: %s' % build)
 print('Commit hash: %s' % commit)
+
+major, minor, patch = version.split('.')
 print(f'Generate file version: {major}.{minor}.{patch}.{build}')
 print('-----------')
 
