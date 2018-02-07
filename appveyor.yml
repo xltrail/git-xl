@@ -1,5 +1,6 @@
 skip_branch_with_pr: true
 
+version: '{build}'
 init:
   # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
   - ps: >-
@@ -30,13 +31,19 @@ build_script:
 
 after_build:
   - iscc scripts\windows\inno-setup-git-xltrail-installer.iss
+  - ps: >-
+      if ($env:APPVEYOR_REPO_TAG -eq "false")
+      {
+        Rename-Item -Path "git-xltrail-windows-0.0.0.exe" -NewName "git-xltrail-windows-$($env:APPVEYOR_REPO_COMMIT.substring(0,7)).exe"
+      }
+  
 
 artifacts:
-  - path: git-xltrail-diff-x86.exe
-  - path: git-xltrail-diff-x64.exe
+  - path: git-xltrail-windows-*.exe
   - path: git-xltrail-x86.exe
   - path: git-xltrail-x64.exe
-  - path: git-xltrail-windows-*.exe
+  - path: git-xltrail-diff-x86.exe
+  - path: git-xltrail-diff-x64.exe
 
 deploy:
 - provider: GitHub
