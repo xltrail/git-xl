@@ -6,14 +6,17 @@ base_directory = os.path.join('scripts', 'windows')
 
 # read build number, repo tag name and git commit hash from env vars 
 build = os.getenv('APPVEYOR_BUILD_NUMBER', '0') 
-tag = os.getenv('APPVEYOR_REPO_TAG_NAME ', '0.0.0')
+version = os.getenv('APPVEYOR_BUILD_VERSION', '0.0.0')
 commit = os.environ['APPVEYOR_REPO_COMMIT'][:7] if os.getenv('APPVEYOR_REPO_COMMIT') else 'dev'
 
-print('Update version information')
-print('Environment variables: %s' % os.environ)
+print('-----------')
+print('Prepare version information')
 print('')
 print('Version tag: %s' % tag)
-print('Git commit hash: %s' % commit)
+print('Build number: %s' % build)
+print('Commit hash: %s' % commit)
+print(f'Generate file version: {major}.{minor}.{patch}.{build}')
+print('-----------')
 
 major, minor, patch = tag.split('.')
 
