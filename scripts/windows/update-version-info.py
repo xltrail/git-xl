@@ -9,6 +9,12 @@ build = os.getenv('APPVEYOR_BUILD_NUMBER', '0')
 tag = os.getenv('APPVEYOR_REPO_TAG_NAME ', '0.0.0')
 commit = os.environ['APPVEYOR_REPO_COMMIT'][:7] if os.getenv('APPVEYOR_REPO_COMMIT') else 'dev'
 
+print('Update version information')
+print('Environment variables: %s' % os.environ)
+print('')
+print('Version tag: %s' % tag)
+print('Git commit hash: %s' % commit)
+
 major, minor, patch = tag.split('.')
 
 
