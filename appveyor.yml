@@ -1,6 +1,6 @@
 skip_branch_with_pr: true
 
-version: '0.1.2.{build}'
+version: '{APPVEYOR_REPO_COMMIT}'
 install:
   - cinst InnoSetup -y
   - C:\Python36\Scripts\pip install -r requirements.txt
@@ -26,6 +26,18 @@ artifacts:
   - path: git-xltrail-x86.exe
   - path: git-xltrail-x64.exe
   - path: git-xltrail-windows-*.exe
+
+deploy:
+- provider: GitHub
+  release: $(APPVEYOR_REPO_TAG_NAME)
+  description: 'Git xltrail $(APPVEYOR_REPO_TAG_NAME)'
+  auth_token:
+    secure: u1oi+34ucFzW+B5tKlGUMP2NjPISw4G61InbYVF3qYq6onAC4+rA92XRn+aDhMEW
+  artifact: /git-xltrail-windows-*\.exe
+  draft: false
+  prerelease: false
+  on:
+    appveyor_repo_tag: true
 
 # on_finish:
 #   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

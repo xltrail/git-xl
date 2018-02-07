@@ -5,6 +5,7 @@ import subprocess
 
 
 VERSION = '0.0.0'
+GIT_COMMIT = ''
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
 
@@ -18,6 +19,14 @@ GIT_ATTRIBUTES = [
 	'*.xlsb diff=xltrail'
 ]
 
+
+def is_git_repository(path):
+	cmd = subprocess.run(['git', 'rev-parse'], cwd=path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+	if not cmd.stderr.split('\n')[0]:
+		return True
+	return False
+
+
 class Installer:
 
 	def __init__(self, mode='global', path=None):
@@ -27,21 +36,16 @@ class Installer:
 		if mode == 'local' and not path:
 			raise ValueError('must specify repository path when installing locally')
 
+		if mode == 'local' and not is_git_repository(path):
+			raise ValueError('not a Git repository')
+
 		self.mode = mode
 		self.path = path
 
 	def install(self):
 		self.execute(['diff.xltrail.command', GIT_XLTRAIL_DIFF])
-		git_attributes = self.git_attributes()
-
-		if os.path.exists(git_attributes):
-			with open(git_attributes, 'r') as f:
-				content = f.read().split('\n')
-		else:
-			content = []
-		content = list(set(content).union(set(GIT_ATTRIBUTES)))
-		with open(git_attributes, 'w') as f:
-			f.writelines('\n'.join(content))
+		git_attributes_path = self.git_attributes()
+		self.update_git_attributes(git_attributes_path)
 
 		# set core.attributesfile when editing global git config
 		if self.mode == 'global':
@@ -69,6 +73,19 @@ class Installer:
 		f = self.execute(['--list', '--show-origin']).split('\n')[0]
 		p = self.execute(['--list']).split('\n')[0]
 		return f[:f.index(p)][5:][:-11] + '.gitattributes'
+
+	
+	def update_git_attributes(self, path):
+		"""Update .gitattributes"""
+		if os.path.exists(path):
+			with open(path, 'r') as f:
+				content = [line for line in f.read().split('\n') if line]
+		else:
+			content = []
+		content = sorted(list(set(content).union(set(GIT_ATTRIBUTES))))
+		with open(path, 'w') as f:
+			f.writelines('\n'.join(content))
+
 
 
 	def uninstall(self):
@@ -160,7 +177,7 @@ replacement for Excel files and .gitignore globally.\n
     Removes the .gitignore filters and the git-diff Excel drop-in replacement
     in the local repository, instead globally.""")
 		elif arg is None:
-			print(f"""git-xltrail/{VERSION} (windows amd64; Python {PYTHON_VERSION})
+			print(f"""git-xltrail/{VERSION} (windows; Python {PYTHON_VERSION}; git {GIT_COMMIT})
 git xltrail <command> [<args>]\n
 Git xltrail is a system for managing Excel workbook files in
 association with a Git repository. Git xltrail:

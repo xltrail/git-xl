@@ -4,9 +4,13 @@ import re
 
 base_directory = os.path.join('scripts', 'windows')
 
-# read from version info
-version = os.getenv('APPVEYOR_BUILD_VERSION', '0.0.0.0')
-major, minor, patch, build = version.split('.')
+# read build number, repo tag name and git commit hash from env vars 
+build = os.getenv('APPVEYOR_BUILD_NUMBER', '0') 
+tag = os.getenv('APPVEYOR_REPO_TAG_NAME ', '0.0.0')
+commit = os.environ['APPVEYOR_REPO_COMMIT'][:7] if os.getenv('APPVEYOR_REPO_COMMIT') else 'dev'
+
+major, minor, patch, build = tag.split('.')
+
 
 s = f"""VSVersionInfo(
   ffi=FixedFileInfo(
@@ -42,11 +46,13 @@ path = os.path.join(base_directory, 'git-xltrail-version-info.py')
 with open(path, 'w') as f:
     f.write(s)
 
-# update git-xltrail.py
+# update git-xltrail.py (VERSION and COMMIT)
 path = 'git-xltrail.py'
 with open(path, 'r') as f:
     s = f.read()
 
 s = re.sub("VERSION\s*=\s*('|\")\d\.\d.\d('|\")", f"VERSION = '{major}.{minor}.{patch}'", s, re.MULTILINE)
+s = re.sub("COMMIT\s*=\s*('|\")\d\.\d.\d('|\")", f"COMMIT = '{commit}'", s, re.MULTILINE)
+
 with open(path, 'w') as f:
     f.write(s)
