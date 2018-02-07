@@ -12,13 +12,13 @@ commit = os.environ['APPVEYOR_REPO_COMMIT'][:7] if os.getenv('APPVEYOR_REPO_COMM
 print('-----------')
 print('Prepare version information')
 print('')
-print('Version tag: %s' % tag)
+print('Version tag: %s' % version)
 print('Build number: %s' % build)
 print('Commit hash: %s' % commit)
 print(f'Generate file version: {major}.{minor}.{patch}.{build}')
 print('-----------')
 
-major, minor, patch = tag.split('.')
+major, minor, patch = version.split('.')
 
 
 s = f"""VSVersionInfo(
