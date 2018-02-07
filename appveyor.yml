@@ -1,6 +1,6 @@
 skip_branch_with_pr: true
 
-version: '$(APPVEYOR_REPO_COMMIT)'
+version: $(APPVEYOR_REPO_COMMIT)
 install:
   - cinst InnoSetup -y
   - C:\Python36\Scripts\pip install -r requirements.txt
