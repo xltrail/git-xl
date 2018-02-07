@@ -10,8 +10,6 @@ version = os.getenv('APPVEYOR_REPO_TAG_NAME', '0.0.0')
 commit = os.environ['APPVEYOR_REPO_COMMIT'][:7] if os.getenv('APPVEYOR_REPO_COMMIT') else 'dev'
 
 print('-----------')
-print('Prepare version information')
-print('')
 print('Version tag: %s' % version)
 print('Build number: %s' % build)
 print('Commit hash: %s' % commit)
