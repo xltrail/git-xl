@@ -18,10 +18,6 @@ install:
   - C:\Python36\Scripts\pip install -r requirements.txt
   - C:\Python36-x64\Scripts\pip install -r requirements.txt
 
-before_build:
-  - C:\Python36\python -m unittest discover -vv
-  - C:\Python36-x64\python -m unittest discover -vv
-
 build_script:
   - C:\Python36\python .\scripts\windows\update-version-info.py
   - C:\Python36\Scripts\pyinstaller --onefile .\git-xltrail-diff.py --name git-xltrail-diff-x86.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico
@@ -41,6 +37,10 @@ after_build:
         Rename-Item -Path "git-xltrail-windows-0.0.0.exe" -NewName "git-xltrail-windows-$($env:APPVEYOR_REPO_COMMIT.substring(0,7)).exe"
       }
   
+test_script:
+  - C:\Python36\python -m unittest discover -vv
+  - C:\Python36-x64\python -m unittest discover -vv
+
 
 artifacts:
   - path: git-xltrail-windows-*.exe
