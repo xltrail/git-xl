@@ -9,15 +9,9 @@ GIT_COMMIT = ''
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
 
-GIT_ATTRIBUTES = [
-	'*.xls diff=xltrail',
-	'*.xlt diff=xltrail',
-	'*.xla diff=xltrail',
-	'*.xlm diff=xltrail',
-	'*.xlsx diff=xltrail',
-	'*.xlsm diff=xltrail',
-	'*.xlsb diff=xltrail'
-]
+FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlm', 'xlsx', 'xlsm', 'xlsb']
+GIT_ATTRIBUTES = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
+GIT_IGNORE = ['*.' + file_ext for file_ext in FILE_EXTENSIONS]
 
 
 def is_git_repository(path):
@@ -42,33 +36,52 @@ class Installer:
 		self.mode = mode
 		self.path = path
 
+		# global config dir (only set when running in `global` mode)
+		self.git_global_config_dir = self.get_global_gitconfig_dir() if self.mode == 'global' else None
+
+		# paths to .gitattributes and .gitignore
+		self.git_attributes_path = self.get_git_attributes_path()
+		self.git_ignore_path = self.get_git_ignore_path()
+
 
 	def install(self):
-		# gitconfig: add diff.xltrail.command
+		# 1. gitconfig: set-up diff.xltrail.command
 		self.execute(['diff.xltrail.command', GIT_XLTRAIL_DIFF])
 
-		# set gitattributes (define differ for Excel file formats)
-		git_attributes_path = self.get_git_attributes_path()
-		self.update_git_file(path=git_attributes_path, keys=GIT_ATTRIBUTES, operation='SET')
+		# 2. set-up gitattributes (define differ for Excel file formats)
+		self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES, operation='SET')
 
-		# set core.attributesfile when editing global git config
+		# 3. set-up gitignore (define differ for Excel file formats)
+		self.update_git_file(path=self.git_ignore_path, keys=GIT_IGNORE, operation='SET')
+
+		# when in global mode, update gitconfig
 		if self.mode == 'global':
-			self.execute(['core.attributesfile', git_attributes_path])
+			# set core.attributesfile
+			self.execute(['core.attributesfile', self.git_attributes_path])
+			# set core.excludesfile
+			self.execute(['core.excludesfile', self.git_ignore_path])
 
 
 	def uninstall(self):
-		# remove diff.xltrail.command from gitconfig
+		# 1. gitconfig: remove diff.xltrail.command from gitconfig
 		keys = self.execute(['--list']).split('\n')
 		if [key for key in keys if key.startswith('diff.xltrail.command')]:
 			self.execute(['--remove-section', 'diff.xltrail'])
 
-		# remove keys from gitattributes
-		git_attributes_path = self.get_git_attributes_path()
-		keys = self.update_git_file(path=git_attributes_path, keys=GIT_ATTRIBUTES, operation='REMOVE')
-
-		# remove core.attributesfile when editing global git config and gitattributes is empty
-		if not keys and self.mode == 'global':
+		# 2. gitattributes: remove keys
+		gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES, operation='REMOVE')
+		# when in global mode and gitattributes is empty, update gitconfig and delete gitattributes
+		if self.mode == 'global' and not gitattributes_keys:
 			self.execute(['--remove-section', 'core.attributesfile'])
+			os.remove(git_attributes_path)
+
+		# 3. gitignore: remove keys
+		gitignore_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_IGNORE, operation='REMOVE')
+		# when in global mode and gitignore is empty, update gitconfig and delete gitignore
+		if self.mode == 'global' and not get_git_ignore_path:
+			self.execute(['--remove-section', 'core.excludesfile'])
+			os.remove(get_git_ignore_path)
+
 
 
 	def execute(self, args):
@@ -79,6 +92,14 @@ class Installer:
 		return subprocess.run(command, cwd=self.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True).stdout
 	
 
+	def get_global_gitconfig_dir(self):
+		# put .gitattributes in same folder as global .gitconfig
+		# determine .gitconfig path
+		# this requires Git 2.8+ (March 2016)
+		f = self.execute(['--list', '--show-origin']).split('\n')[0]
+		p = self.execute(['--list']).split('\n')[0]
+		return f[:f.index(p)][5:][:-11]
+
 	def get_git_attributes_path(self):
 		if self.mode == 'local':
 			return os.path.join(self.path, '.gitattributes')
@@ -88,15 +109,21 @@ class Installer:
 		if core_attributesfile:
 			return core_attributesfile
 
-		# put .gitattributes in same folder as global .gitconfig
-		# determine .gitconfig path
-		f = self.execute(['--list', '--show-origin']).split('\n')[0]
-		p = self.execute(['--list']).split('\n')[0]
-		return f[:f.index(p)][5:][:-11] + '.gitattributes'
+		# put .gitattributes into same directory as global .gitconfig
+		return os.path.join(self.git_global_config_dir, '.gitattributes')
 
 
 	def get_git_ignore_path(self):
-		pass
+		if self.mode == 'local':
+			return os.path.join(self.path, '.gitignore')
+
+		# check if core.excludesfile is configured
+		core_excludesfile = self.execute(['--get', 'core.excludesfile']).split('\n')[0]
+		if core_excludesfile:
+			return core_excludesfile
+
+		# put .gitattributes into same directory as global .gitconfig
+		return os.path.join(self.git_global_config_dir, '.gitignore')
 	
 
 	def update_git_file(self, path, keys, operation):
@@ -114,11 +141,7 @@ class Installer:
 			# remove keys from content
 			content = [line for line in content if line and line not in keys]
 	
-		if operation == 'REMOVE' and not content:
-			# no content
-			# delete file
-			os.remove(path)
-		else:
+		if content:
 			with open(path, 'w') as f:
 				f.writelines('\n'.join(content))
 		
