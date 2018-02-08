@@ -9,9 +9,9 @@ GIT_COMMIT = ''
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
 
-FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlm', 'xlsx', 'xlsm', 'xlsb']
+FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb']
 GIT_ATTRIBUTES = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
-GIT_IGNORE = ['*.' + file_ext for file_ext in FILE_EXTENSIONS]
+GIT_IGNORE = ['~$*.' + file_ext for file_ext in FILE_EXTENSIONS]
 
 
 def is_git_repository(path):
@@ -71,18 +71,18 @@ class Installer:
 		# 2. gitattributes: remove keys
 		gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES, operation='REMOVE')
 		# when in global mode and gitattributes is empty, update gitconfig and delete gitattributes
-		if self.mode == 'global' and not gitattributes_keys:
-			self.execute(['--remove-section', 'core.attributesfile'])
-			os.remove(git_attributes_path)
+		if not gitattributes_keys:
+			if self.mode == 'global': 
+				self.execute(['--remove-section', 'core.attributesfile'])
+			os.remove(self.git_attributes_path)
 
 		# 3. gitignore: remove keys
 		gitignore_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_IGNORE, operation='REMOVE')
 		# when in global mode and gitignore is empty, update gitconfig and delete gitignore
-		if self.mode == 'global' and not get_git_ignore_path:
-			self.execute(['--remove-section', 'core.excludesfile'])
-			os.remove(get_git_ignore_path)
-
-
+		if not gitignore_keys:
+			if self.mode == 'global':
+				self.execute(['--remove-section', 'core.excludesfile'])
+			os.remove(self.git_ignore_path)
 
 	def execute(self, args):
 		command = ['git', 'config']
