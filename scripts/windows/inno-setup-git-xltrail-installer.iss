@@ -68,8 +68,8 @@ Filename: "{code:GetExistingGitInstallation}\git-xltrail-uninstaller.exe"; Param
 [Files]
 Source: {#PathToDiffX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-diff.exe"; Check: not Is64BitInstallMode
 Source: {#PathToDiffX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-diff.exe"; Check: Is64BitInstallMode
-Source: {#PathToX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail.exe"; AfterInstall: InstallGitxltrail; Check: not Is64BitInstallMode
-Source: {#PathToX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail.exe"; AfterInstall: InstallGitxltrail; Check: Is64BitInstallMode
+Source: {#PathToX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail.exe"; Check: not Is64BitInstallMode
+Source: {#PathToX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail.exe"; Check: Is64BitInstallMode
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: IsAdminLoggedOn and NeedsAddPath('{app}')
