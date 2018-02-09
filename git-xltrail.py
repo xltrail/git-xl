@@ -73,7 +73,7 @@ class Installer:
 		# when in global mode and gitattributes is empty, update gitconfig and delete gitattributes
 		if not gitattributes_keys:
 			if self.mode == 'global': 
-				self.execute(['--remove-section', 'core.attributesfile'])
+				self.execute(['--unset', 'core.attributesfile'])
 			os.remove(self.git_attributes_path)
 
 		# 3. gitignore: remove keys
@@ -81,7 +81,7 @@ class Installer:
 		# when in global mode and gitignore is empty, update gitconfig and delete gitignore
 		if not gitignore_keys:
 			if self.mode == 'global':
-				self.execute(['--remove-section', 'core.excludesfile'])
+				self.execute(['--unset', 'core.excludesfile'])
 			os.remove(self.git_ignore_path)
 
 	def execute(self, args):
@@ -96,8 +96,13 @@ class Installer:
 		# put .gitattributes in same folder as global .gitconfig
 		# determine .gitconfig path
 		# this requires Git 2.8+ (March 2016)
-		f = self.execute(['--list', '--show-origin']).split('\n')[0]
-		p = self.execute(['--list']).split('\n')[0]
+		f = self.execute(['--list', '--show-origin'])
+		p = self.execute(['--list'])
+
+		f = f.split('\n')[0]
+		p = p.split('\n')[0]
+
+
 		return f[:f.index(p)][5:][:-11]
 
 	def get_git_attributes_path(self):

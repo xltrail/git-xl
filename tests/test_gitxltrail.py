@@ -99,3 +99,25 @@ class TestLocalInstaller(TestCase):
             mock.call().writelines('something'),
             mock.call().__exit__(None, None, None)
         ])
+
+
+class TestGlobalInstaller(TestCase):
+
+    @mock.patch('git-xltrail.subprocess.run')
+    @mock.patch('git-xltrail.Installer.get_git_attributes_path')
+    @mock.patch('git-xltrail.Installer.get_git_ignore_path')
+    def test_global_gitconfig_dir(self, mock_get_git_ignore_path, mock_get_git_attributes_path, mock_run):
+        installer = git_xltrail.Installer(mode='global')
+        self.assertEqual(mock_run.call_count, 2)
+        mock_run.assert_has_calls([
+            mock.call(['git', 'config', '--global', '--list', '--show-origin'], cwd=None, stderr=-1, stdout=-1, universal_newlines=True),
+            mock.call(['git', 'config', '--global', '--list'], cwd=None, stderr=-1, stdout=-1, universal_newlines=True)
+        ])
+
+    @mock.patch('git-xltrail.subprocess.run')
+    @mock.patch('git-xltrail.Installer.get_global_gitconfig_dir')
+    @mock.patch('git-xltrail.Installer.get_git_ignore_path')
+    def test_global_gitattributes_path(self, mock_get_git_ignore_path, get_global_gitconfig_dir, mock_run):
+        installer = git_xltrail.Installer(mode='global')
+        self.assertEqual(mock_run.call_count, 1)
+        mock_run.assert_called_once_with(['git', 'config', '--global', '--get', 'core.attributesfile'], cwd=None, stderr=-1, stdout=-1, universal_newlines=True)
