@@ -156,8 +156,9 @@ class Installer:
 		if os.path.exists(path):
 			os.remove(path)
 
+GIT_XLTRAIL_VERSION = f'git-xltrail/{VERSION} (windows; Python {PYTHON_VERSION}); git {GIT_COMMIT}'
 
-HELP_GENERIC = f"""git-xltrail/{VERSION} (windows; Python {PYTHON_VERSION}; git {GIT_COMMIT})
+HELP_GENERIC = f"""{GIT_XLTRAIL_VERSION}
 git xltrail <command> [<args>]\n
 Git xltrail is a system for managing Excel workbook files in
 association with a Git repository. Git xltrail:
@@ -165,6 +166,8 @@ association with a Git repository. Git xltrail:
 * makes Git ignore temporary Excel files via .gitignore\n
 Commands
 --------\n
+* git xltrail env:
+    Display the Git xltrail environment.
 * git xltrail install:
     Install Git xltrail.
 * git xltrail uninstall:
@@ -172,6 +175,7 @@ Commands
 * git xltrail version:
     Report the version number."""
 
+HELP_ENV = 'git xltrail env\n\nDisplay the current Git xltrail environment.'
 
 HELP_INSTALL = """git xltrail install [options]\n
 Perform the following actions to ensure that Git xltrail is setup properly:\n
@@ -192,7 +196,6 @@ replacement for Excel files and .gitignore globally.\n
 * --local:
     Removes the .gitignore filters and the git-diff Excel drop-in replacement
     in the local repository, instead globally."""
-
 
 
 class CommandParser:
@@ -216,27 +219,17 @@ class CommandParser:
 
 	
 	def version(self, *args):
-		print(f'git-xltrail/{VERSION} (windows; Python {PYTHON_VERSION}); git {GIT_COMMIT}')
+		print(GIT_XLTRAIL_VERSION)
 
-	def install(self, *args):
-		if args:
-			if args[0] == '--local':
-				installer = Installer(mode='local', path=os.getcwd())
-			else:
-				return print(f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
-		else:
-			installer = Installer(mode='global')
-		installer.install()
 
-	def uninstall(self, *args):
-		if args:
-			if args[0] == '--local':
-				installer = Installer(mode='local', path=os.getcwd())
-			else:
-				return print(f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
-		else:
-			installer = Installer(mode='global')
-		installer.uninstall()
+	def env(self):
+		current_path = os.getcwd()
+		p = GIT_XLTRAIL_VERSION + '\n\n'
+		p += 'LocalWorkingDir=' + (current_path if is_git_repository(current_path) else '') + '\n'
+		p += 'LocalGitIgnore=' + (os.path.join(current_path, '.gitignore') if is_git_repository(current_path) else '') + '\n'
+		p += 'LocalGitAttributes=' + (os.path.join(current_path, '.gitattributes') if is_git_repository(current_path) else '') + '\n'
+		print(p)
+
 
 	def help(self, *args):
 		module = sys.modules[__name__]
@@ -250,6 +243,28 @@ class CommandParser:
 			else:
 				print(getattr(module, help_text))
 
+
+	def install(self, *args):
+		if args:
+			if args[0] == '--local':
+				installer = Installer(mode='local', path=os.getcwd())
+			else:
+				return print(f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
+		else:
+			installer = Installer(mode='global')
+		installer.install()
+
+
+	def uninstall(self, *args):
+		if args:
+			if args[0] == '--local':
+				installer = Installer(mode='local', path=os.getcwd())
+			else:
+				return print(f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
+		else:
+			installer = Installer(mode='global')
+		installer.uninstall()
+	
 
 if __name__ == '__main__':
 	command_parser = CommandParser(sys.argv[1:])

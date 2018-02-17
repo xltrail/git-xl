@@ -141,3 +141,19 @@ class TestHelp(TestCase):
         command_parser = git_xltrail.CommandParser(['help', 'uninstall'])
         command_parser.execute()
         self.assertEqual(mock_stdout.getvalue(), git_xltrail.HELP_UNINSTALL + '\n')
+
+
+class CommandParser(TestCase):
+
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_version(self, mock_stdout):
+        command_parser = git_xltrail.CommandParser(['version'])
+        command_parser.execute()
+        self.assertEqual(mock_stdout.getvalue(), git_xltrail.GIT_XLTRAIL_VERSION + '\n')
+
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_env(self, mock_stdout):
+        command_parser = git_xltrail.CommandParser(['env'])
+        command_parser.execute()
+        self.assertTrue(mock_stdout.getvalue())
+
