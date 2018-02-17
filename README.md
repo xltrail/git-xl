@@ -2,7 +2,7 @@
 
 | Windows | macOS |
 | :---- | :------ |
-[  [![Windows build status][1]] | not yet available |
+| [![Windows build status][1]] | not yet available |
 
 [1]: https://ci.appveyor.com/api/projects/status/gr093ijhqwtmp5s9/branch/master?svg=true
 
