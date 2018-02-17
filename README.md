@@ -1,13 +1,18 @@
 # Git Excel Extension
 
-[![Build status](https://ci.appveyor.com/api/projects/status/gr093ijhqwtmp5s9/branch/master?svg=true)](https://ci.appveyor.com/project/zoomeranalytics/git-xltrail/branch/master)
+| Windows | macOS |
+| :---- | :------ |
+[  [![Windows build status][1]] | not yet available |
+
+[1]: https://ci.appveyor.com/api/projects/status/gr093ijhqwtmp5s9/branch/master?svg=true
+
 
 Git xltrail is an open-source Git command line extension for managing Excel workbook files in Git. It is written in Python, with pre-compiled binaries available for Windows.
 
 For further info, see [https://www.xltrail.com/git-xltrail](https://www.xltrail.com/git-xltrail).
 
 
-## Install Git xltrail
+## Installing Git xltrail
 
 You can install Git xltrail by downloading the [Binary package][https://github.com/ZoomerAnalytics/git-xltrail/releases/download/0.1.0/git-xltrail-windows-0.1.0.exe] for Windows.
 
@@ -35,7 +40,7 @@ git add .gitignore
 
 ## Features
 
-##### Diff Excel VBA
+### Diff Excel VBA
 
 Get meaningful `git diff` output when comparing Excel workbook files containing VBA code.
 
@@ -62,7 +67,7 @@ index 293e924..8438ae5 100644
 ```
 
 
-##### Ignore temporary Excel files
+### Ignore temporary Excel files
 
 Automatically ignore temporary `~$` Excel files (e.g. when opening `Book1.xlsb`, Excel creates a temporary file called `~$Book1.xlsb`)
 
