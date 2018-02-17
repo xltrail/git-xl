@@ -60,7 +60,7 @@ with open(path, 'r') as f:
     s = f.read()
 
 s = re.sub("VERSION\s*=\s*('|\")\d\.\d.\d('|\")", f"VERSION = '{major}.{minor}.{patch}'", s, re.MULTILINE)
-s = re.sub("GIT_COMMIT\s*=\s*('|\")\d\.\d.\d('|\")", f"GIT_COMMIT = '{commit}'", s, re.MULTILINE)
+s = re.sub("GIT_COMMIT\s*=\s*('|\")[a-zA-Z0-9]*('|\")", f"GIT_COMMIT = '{commit}'", s, re.MULTILINE)
 
 with open(path, 'w') as f:
     f.write(s)
