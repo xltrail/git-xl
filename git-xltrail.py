@@ -216,7 +216,7 @@ class CommandParser:
 
 	
 	def version(self, *args):
-		print(f'git-xltrail/{VERSION} (Python {PYTHON_VERSION})')
+		print(f'git-xltrail/{VERSION} (windows; Python {PYTHON_VERSION}); git {GIT_COMMIT}')
 
 	def install(self, *args):
 		if args:
