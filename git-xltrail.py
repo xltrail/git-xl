@@ -157,11 +157,48 @@ class Installer:
 			os.remove(path)
 
 
+HELP_GENERIC = f"""git-xltrail/{VERSION} (windows; Python {PYTHON_VERSION}; git {GIT_COMMIT})
+git xltrail <command> [<args>]\n
+Git xltrail is a system for managing Excel workbook files in
+association with a Git repository. Git xltrail:
+* installs a special git-diff for Excel files 
+* makes Git ignore temporary Excel files via .gitignore\n
+Commands
+--------\n
+* git xltrail install:
+    Install Git xltrail.
+* git xltrail uninstall:
+    Uninstall Git xltrail.
+* git xltrail version:
+    Report the version number."""
+
+
+HELP_INSTALL = """git xltrail install [options]\n
+Perform the following actions to ensure that Git xltrail is setup properly:\n
+* Set up .gitignore to make Git ignore temporary Excel files.
+* Install a git-diff drop-in replacement for Excel files.\n
+Options:\n
+Without any options, git xltrail install will setup the Excel differ and
+.gitignore globally.\n
+* --local:
+    Sets the .gitignore filters and the git-diff Excel drop-in replacement
+    in the local repository, instead of the global git config (~/.gitconfig)."""
+
+HELP_UNINSTALL = """git xltrail uninstall [options]\n
+Uninstalls Git xltrail:\n
+Options:\n
+Without any options, git xltrail uninstall will remove the git-diff drop-in 
+replacement for Excel files and .gitignore globally.\n
+* --local:
+    Removes the .gitignore filters and the git-diff Excel drop-in replacement
+    in the local repository, instead globally."""
+
+
 
 class CommandParser:
 
-	def __init__(self):
-		self.args = sys.argv[1:]
+	def __init__(self, args):
+		self.args = args
 	
 	def execute(self):
 		if not self.args:
@@ -201,49 +238,19 @@ class CommandParser:
 			installer = Installer(mode='global')
 		installer.uninstall()
 
-
 	def help(self, *args):
+		module = sys.modules[__name__]
 		arg = args[0] if args else None
-		if arg == 'install':
-			print("""git xltrail install [options]\n
-Perform the following actions to ensure that Git xltrail is setup properly:\n
-* Set up .gitignore to make Git ignore temporary Excel files.
-* Install a git-diff drop-in replacement for Excel files.\n
-Options:\n
-Without any options, git xltrail install will setup the Excel differ and
-.gitignore globally.\n
-* --local:
-    Sets the .gitignore filters and the git-diff Excel drop-in replacement
-    in the local repository, instead of the global git config (~/.gitconfig).""")
-		elif arg == 'uninstall':
-			print("""git xltrail uninstall [options]\n
-Uninstalls Git xltrail:\n
-Options:\n
-Without any options, git xltrail uninstall will remove the git-diff drop-in 
-replacement for Excel files and .gitignore globally.\n
-* --local:
-    Removes the .gitignore filters and the git-diff Excel drop-in replacement
-    in the local repository, instead globally.""")
-		elif arg is None:
-			print(f"""git-xltrail/{VERSION} (windows; Python {PYTHON_VERSION}; git {GIT_COMMIT})
-git xltrail <command> [<args>]\n
-Git xltrail is a system for managing Excel workbook files in
-association with a Git repository. Git xltrail:
-* installs a special git-diff for Excel files 
-* makes Git ignore temporary Excel files via .gitignore\n
-Commands
---------\n
-* git xltrail install:
-    Install Git xltrail.
-* git xltrail uninstall:
-    Uninstall Git xltrail.
-* git xltrail version:
-    Report the version number.""")
+		if arg is None:
+			print(HELP_GENERIC)
 		else:
-			print(f'Sorry, no usage text found for "{arg}"')
-
+			help_text = 'HELP_%s' % arg.upper()
+			if not hasattr(module, help_text):
+				print(f'Sorry, no usage text found for "{arg}"')
+			else:
+				print(getattr(module, help_text))
 
 
 if __name__ == '__main__':
-	command_parser = CommandParser()
+	command_parser = CommandParser(sys.argv[1:])
 	command_parser.execute()

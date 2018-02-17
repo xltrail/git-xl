@@ -1,4 +1,6 @@
+from io import StringIO
 from unittest import TestCase, mock
+
 git_xltrail = __import__("git-xltrail")
 
 
@@ -118,3 +120,24 @@ class TestGlobalInstaller(TestCase):
         installer = git_xltrail.Installer(mode='global')
         self.assertEqual(mock_run.call_count, 1)
         mock_run.assert_called_once_with(['git', 'config', '--global', '--get', 'core.attributesfile'], cwd=None, stderr=-1, stdout=-1, universal_newlines=True)
+
+
+class TestHelp(TestCase):
+    
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_generic_help(self, mock_stdout):
+        command_parser = git_xltrail.CommandParser(['help'])
+        command_parser.execute()
+        self.assertEqual(mock_stdout.getvalue(), git_xltrail.HELP_GENERIC + '\n')
+
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_help_install(self, mock_stdout):
+        command_parser = git_xltrail.CommandParser(['help', 'install'])
+        command_parser.execute()
+        self.assertEqual(mock_stdout.getvalue(), git_xltrail.HELP_INSTALL + '\n')
+
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    def test_help_uninstall(self, mock_stdout):
+        command_parser = git_xltrail.CommandParser(['help', 'uninstall'])
+        command_parser.execute()
+        self.assertEqual(mock_stdout.getvalue(), git_xltrail.HELP_UNINSTALL + '\n')
