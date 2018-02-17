@@ -74,7 +74,7 @@ class Installer:
 		if not gitattributes_keys:
 			if self.mode == 'global': 
 				self.execute(['--unset', 'core.attributesfile'])
-			os.remove(self.git_attributes_path)
+			self.delete_git_file(self.git_attributes_path)
 
 		# 3. gitignore: remove keys
 		gitignore_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_IGNORE, operation='REMOVE')
@@ -82,7 +82,7 @@ class Installer:
 		if not gitignore_keys:
 			if self.mode == 'global':
 				self.execute(['--unset', 'core.excludesfile'])
-			os.remove(self.git_ignore_path)
+			self.delete_git_file(self.git_ignore_path)
 
 	def execute(self, args):
 		command = ['git', 'config']
@@ -151,6 +151,10 @@ class Installer:
 				f.writelines('\n'.join(content))
 		
 		return content
+	
+	def delete_git_file(self, path):
+		if os.path.exists(path):
+			os.remove(path)
 
 
 
