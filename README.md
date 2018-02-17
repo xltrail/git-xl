@@ -1,6 +1,11 @@
 # Git Excel Extension
 
-Git xltrail is an open-source Git command line extension for managing Excel workbook files in Git. It is written in Python, with pre-compiled binaries available for Windows. 
+[![Build status](https://ci.appveyor.com/api/projects/status/gr093ijhqwtmp5s9/branch/master?svg=true)](https://ci.appveyor.com/project/zoomeranalytics/git-xltrail/branch/master)
+
+Git xltrail is an open-source Git command line extension for managing Excel workbook files in Git. It is written in Python, with pre-compiled binaries available for Windows.
+
+For further info, see [https://www.xltrail.com/git-xltrail](https://www.xltrail.com/git-xltrail).
+
 
 ## Install Git xltrail
 
