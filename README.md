@@ -14,7 +14,7 @@ For further info, see [https://www.xltrail.com/git-xltrail](https://www.xltrail.
 
 ## Installing Git xltrail
 
-You can install Git xltrail by downloading the [Binary package][https://github.com/ZoomerAnalytics/git-xltrail/releases/download/0.1.0/git-xltrail-windows-0.1.0.exe] for Windows.
+You can install Git xltrail by downloading the [Binary package](https://github.com/ZoomerAnalytics/git-xltrail/releases/download/0.1.0/git-xltrail-windows-0.1.0.exe) for Windows.
 
 Once downloaded and installed, you need to set Git xltrail up via a command line command. This only
 needs to be done once per machine if installed globally or once per repository if installed with the `--local` option.
