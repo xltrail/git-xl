@@ -65,10 +65,7 @@ class TestLocalInstaller(TestCase):
         installer = git_xltrail.Installer(mode='local', path='\\path\\to\\repository')
         installer.uninstall()
         mock_run.assert_called_once_with(['git', 'config', '--list'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True)
-        mock_os_remove.assert_has_calls([
-            mock.call('\\path\\to\\repository\\.gitattributes'),
-            mock.call('\\path\\to\\repository\\.gitignore')
-        ])
+        mock_os_remove.assert_has_calls([])
 
 
     @mock.patch('git-xltrail.subprocess.run')
