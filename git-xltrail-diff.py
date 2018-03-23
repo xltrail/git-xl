@@ -33,11 +33,16 @@ def get_vba(workbook):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 8:
+    if not 8 <= len(sys.argv) <= 9:
         print('Unexpected number of arguments')
         sys.exit(0)
 
-    _, workbook_name, workbook_b, _, _, workbook_a, _ , _ = sys.argv
+    if len(sys.argv) == 8:
+        _, workbook_name, workbook_b, _, _, workbook_a, _ , _ = sys.argv
+        numlines = 3
+    if len(sys.argv) == 9:
+        _, numlines, workbook_name, workbook_b, _, _, workbook_a, _, _ = sys.argv
+        numlines = int(numlines)
 
     path_workbook_a = os.path.abspath(workbook_a)
     path_workbook_b = os.path.abspath(workbook_b)
@@ -57,7 +62,7 @@ if __name__ == '__main__':
             diffs.append({
                 'a': '--- a/' + workbook_name + '/VBA/' + module_a,
                 'b': '+++ b/' + workbook_name + '/VBA/' + module_a,
-                'diff': '\n'.join([(Fore.RED if line.startswith('-') else (Fore.GREEN if line.startswith('+') else (Fore.CYAN if line.startswith('@') else ''))) + line.strip('\n') for line in list(unified_diff(workbook_b_modules[module_a].split('\n'), vba_a.split('\n')))[2:]])
+                'diff': '\n'.join([(Fore.RED if line.startswith('-') else (Fore.GREEN if line.startswith('+') else (Fore.CYAN if line.startswith('@') else ''))) + line.strip('\n') for line in list(unified_diff(workbook_b_modules[module_a].split('\n'), vba_a.split('\n'), n=numlines))[2:]])
             })
 
     for module_b, vba_b in workbook_b_modules.items():
