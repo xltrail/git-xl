@@ -213,7 +213,7 @@ class CommandParser:
         # do not process if command does not exist
         if not hasattr(self, command):
             return print(
-                f"""Error: unknown command "{command}" for "git-xltrail"\nRun 'git-xltrail --help' for usage.""")
+                f"""Error: unknown command "{command}" for "git xltrail"\nRun 'git xltrail help' for usage.""")
 
         # execute command
         getattr(self, command)(*args)
@@ -249,7 +249,7 @@ class CommandParser:
                 installer = Installer(mode='local', path=os.getcwd())
             else:
                 return print(
-                    f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
+                    f"""Invalid option "{args[0]}" for "git xltrail install"\nRun 'git xltrail help' for usage.""")
         else:
             installer = Installer(mode='global')
         installer.install()
@@ -260,7 +260,7 @@ class CommandParser:
                 installer = Installer(mode='local', path=os.getcwd())
             else:
                 return print(
-                    f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
+                    f"""Invalid option "{args[0]}" for "git xltrail install"\nRun 'git xltrail help' for usage.""")
         else:
             installer = Installer(mode='global')
         installer.uninstall()
