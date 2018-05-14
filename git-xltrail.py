@@ -10,8 +10,8 @@ PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.versio
 GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
 
 FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm',
-                   'doc', 'docm', 'dotm'
-                   'ppt', 'ppa' 'pptm', 'potm', 'ppsm', 'ppam']
+                   'doc', 'docm', 'dotm',
+                   'ppt', 'ppa', 'pptm', 'potm', 'ppsm', 'ppam']
 GIT_ATTRIBUTES = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
 GIT_IGNORE = ['~$*.' + file_ext for file_ext in FILE_EXTENSIONS]
 

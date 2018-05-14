@@ -23,11 +23,11 @@ class TestLocalInstaller(TestCase):
         mock_file_open.assert_has_calls([
             mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
             mock.call().__enter__(),
-            mock.call().writelines('*.doc diff=xltrail\n*.docm diff=xltrail\n*.dotmppt diff=xltrail\n*.potm diff=xltrail\n*.ppam diff=xltrail\n*.ppapptm diff=xltrail\n*.ppsm diff=xltrail\n*.xla diff=xltrail\n*.xlam diff=xltrail\n*.xls diff=xltrail\n*.xlsb diff=xltrail\n*.xlsm diff=xltrail\n*.xlsx diff=xltrail\n*.xlt diff=xltrail\n*.xltm diff=xltrail\n*.xltx diff=xltrail'),
+            mock.call().writelines('*.doc diff=xltrail\n*.docm diff=xltrail\n*.dotm diff=xltrail\n*.ppt diff=xltrail\n*.potm diff=xltrail\n*.ppam diff=xltrail\n*.ppa diff=xltrail\n*.pptm diff=xltrail\n*.ppsm diff=xltrail\n*.xla diff=xltrail\n*.xlam diff=xltrail\n*.xls diff=xltrail\n*.xlsb diff=xltrail\n*.xlsm diff=xltrail\n*.xlsx diff=xltrail\n*.xlt diff=xltrail\n*.xltm diff=xltrail\n*.xltx diff=xltrail'),
             mock.call().__exit__(None, None, None),
             mock.call('\\path\\to\\repository\\.gitignore', 'w'),
             mock.call().__enter__(),
-            mock.call().writelines('~$*.doc\n~$*.docm\n~$*.dotmppt\n~$*.potm\n~$*.ppam\n~$*.ppapptm\n~$*.ppsm\n~$*.xla\n~$*.xlam\n~$*.xls\n~$*.xlsb\n~$*.xlsm\n~$*.xlsx\n~$*.xlt\n~$*.xltm\n~$*.xltx'),
+            mock.call().writelines('~$*.doc\n~$*.docm\n~$*.dotm\n~$*.ppt\n~$*.potm\n~$*.ppam\n~$*.ppa\n~$*.pptm\n~$*.ppsm\n~$*.xla\n~$*.xlam\n~$*.xls\n~$*.xlsb\n~$*.xlsm\n~$*.xlsx\n~$*.xlt\n~$*.xltm\n~$*.xltx'),
             mock.call().__exit__(None, None, None)
         ])
 
@@ -46,7 +46,7 @@ class TestLocalInstaller(TestCase):
             mock.call().__exit__(None, None, None),
             mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
             mock.call().__enter__(),
-            mock.call().writelines('*.doc diff=xltrail\n*.docm diff=xltrail\n*.dotmppt diff=xltrail\n*.potm diff=xltrail\n*.ppam diff=xltrail\n*.ppapptm diff=xltrail\n*.ppsm diff=xltrail\n*.xla diff=xltrail\n*.xlam diff=xltrail\n*.xls diff=xltrail\n*.xlsb diff=xltrail\n*.xlsm diff=xltrail\n*.xlsx diff=xltrail\n*.xlt diff=xltrail\n*.xltm diff=xltrail\n*.xltx diff=xltrail\nsomething'),
+            mock.call().writelines('*.doc diff=xltrail\n*.docm diff=xltrail\n*.dotm diff=xltrail\n*.ppt diff=xltrail\n*.potm diff=xltrail\n*.ppam diff=xltrail\n*.ppa diff=xltrail\n*.pptm diff=xltrail\n*.ppsm diff=xltrail\n*.xla diff=xltrail\n*.xlam diff=xltrail\n*.xls diff=xltrail\n*.xlsb diff=xltrail\n*.xlsm diff=xltrail\n*.xlsx diff=xltrail\n*.xlt diff=xltrail\n*.xltm diff=xltrail\n*.xltx diff=xltrail\nsomething'),
             mock.call().__exit__(None, None, None),
             mock.call('\\path\\to\\repository\\.gitignore', 'r'),
             mock.call().__enter__(),
@@ -54,7 +54,7 @@ class TestLocalInstaller(TestCase):
             mock.call().__exit__(None, None, None),
             mock.call('\\path\\to\\repository\\.gitignore', 'w'),
             mock.call().__enter__(),
-            mock.call().writelines('something\n~$*.doc\n~$*.docm\n~$*.dotmppt\n~$*.potm\n~$*.ppam\n~$*.ppapptm\n~$*.ppsm\n~$*.xla\n~$*.xlam\n~$*.xls\n~$*.xlsb\n~$*.xlsm\n~$*.xlsx\n~$*.xlt\n~$*.xltm\n~$*.xltx'),
+            mock.call().writelines('something\n~$*.doc\n~$*.docm\n~$*.dotm\n~$*.ppt\n~$*.potm\n~$*.ppam\n~$*.ppa\n~$*.pptm\n~$*.ppsm\n~$*.xla\n~$*.xlam\n~$*.xls\n~$*.xlsb\n~$*.xlsm\n~$*.xlsx\n~$*.xlt\n~$*.xltm\n~$*.xltx'),
             mock.call().__exit__(None, None, None)
         ])
 
