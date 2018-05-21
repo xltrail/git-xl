@@ -7,13 +7,23 @@ import subprocess
 VERSION = '0.0.0'
 GIT_COMMIT = ''
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
-GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
-
 FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm',
                    'doc', 'docm', 'dotm',
                    'ppt', 'ppa', 'pptm', 'potm', 'ppsm', 'ppam']
-GIT_ATTRIBUTES = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
+GIT_ATTRIBUTES_DIFFER = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
+GIT_ATTRIBUTES_MERGER = ['*.' + file_ext + ' merge=xltrail' for file_ext in FILE_EXTENSIONS]
 GIT_IGNORE = ['~$*.' + file_ext for file_ext in FILE_EXTENSIONS]
+
+# determine if running as exe or in dev mode
+if getattr(sys, 'frozen', False):
+    GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
+    GIT_XLTRAIL_MERGE = 'git-xltrail-merge.exe'
+else:
+    executable_path = sys.executable.replace('\\', '/')
+    differ_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-xltrail-diff.py').replace('\\', '/')
+    merger_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-xltrail-merge.py').replace('\\', '/')
+    GIT_XLTRAIL_DIFF = f'{executable_path} {differ_path}'
+    GIT_XLTRAIL_MERGE = f'{executable_path} {merger_path}'
 
 
 def is_git_repository(path):
@@ -50,13 +60,18 @@ class Installer:
         # 1. gitconfig: set-up diff.xltrail.command
         self.execute(['diff.xltrail.command', GIT_XLTRAIL_DIFF])
 
-        # 2. set-up gitattributes (define differ for Excel file formats)
-        self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES, operation='SET')
+        # 2. gitconfig: merge-driver
+        self.execute(['merge.xltrail.name', 'xltrail merge driver for Excel workbooks'])
+        self.execute(['merge.xltrail.driver', f'{GIT_XLTRAIL_MERGE} %P %O %A %B'])
 
-        # 3. set-up gitignore (define differ for Excel file formats)
+        # 3. set-up gitattributes (define custom differ and merger)
+        self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_DIFFER, operation='SET')
+        self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_MERGER, operation='SET')
+
+        # 4. set-up gitignore (define differ for Excel file formats)
         self.update_git_file(path=self.git_ignore_path, keys=GIT_IGNORE, operation='SET')
 
-        # when in global mode, update gitconfig
+        # 5. update gitconfig (only relevent when running in `global` mode)
         if self.mode == 'global':
             # set core.attributesfile
             self.execute(['core.attributesfile', self.git_attributes_path])
@@ -244,14 +259,13 @@ class CommandParser:
                 print(getattr(module, help_text))
 
     def install(self, *args):
-        if args:
-            if args[0] == '--local':
-                installer = Installer(mode='local', path=os.getcwd())
-            else:
-                return print(
-                    f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
-        else:
+        if not args or args[0] == '--global':
             installer = Installer(mode='global')
+        elif args[0] == '--local':
+            installer = Installer(mode='local', path=os.getcwd())
+        else:
+            return print(
+                f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
         installer.install()
 
     def uninstall(self, *args):
