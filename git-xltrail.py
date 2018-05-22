@@ -13,7 +13,7 @@ from xltrail.core import Workbook
 
 
 VERSION = '0.0.0'
-GIT_COMMIT = ''
+GIT_COMMIT = 'dev'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm',
                    'doc', 'docm', 'dotm',
@@ -322,7 +322,9 @@ class CommandParser:
             print(colorama.Fore.WHITE + colorama.Style.BRIGHT + f)
             for vba_module in wb.vba_modules:
                 print(colorama.Fore.WHITE + colorama.Style.NORMAL + '    %s' % ('VBA/' + vba_module.type + '/' + vba_module.name))
-                if '-v' in args or '--verbose' in args:
+                if '-v' in args or '-vv' in args or '--verbose' in args:
+                    if '-vv' in args:
+                        print(colorama.Style.DIM + '    [%s]' % vba_module.digest[:7])
                     for line in vba_module.content.split('\n'):
                         print(colorama.Fore.YELLOW + colorama.Style.NORMAL + '        %s' % (line))
             print('')
