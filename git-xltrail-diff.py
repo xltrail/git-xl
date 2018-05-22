@@ -1,13 +1,13 @@
 import sys
 import os
 import shutil
-
-from core import get_vba
-from difflib import unified_diff
-from oletools.olevba3 import VBA_Parser
 import colorama
-
+import clr
+from difflib import unified_diff
 from colorama import Fore, Back, Style, init
+
+clr.AddReference('xltrail-core')
+from xltrail.core import Workbook 
 
 
 if __name__ == '__main__':
@@ -25,8 +25,11 @@ if __name__ == '__main__':
     path_workbook_a = os.path.abspath(workbook_a)
     path_workbook_b = os.path.abspath(workbook_b)
 
-    workbook_a_modules = get_vba(path_workbook_a)
-    workbook_b_modules = {} if workbook_b == 'nul' else get_vba(path_workbook_b)
+    workbook_a = Workbook(path_workbook_a)
+    workbook_b = Workbook(path_workbook_b)
+
+    workbook_a_modules = dict([(m.name, m.content) for m in workbook_a.vba_modules])
+    workbook_b_modules = {} if workbook_b == 'nul' else dict([(m.name, m.content) for m in workbook_b.vba_modules])
 
     diffs = []
     for module_a, vba_a in workbook_a_modules.items():
