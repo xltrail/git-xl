@@ -1,7 +1,15 @@
 #!/usr/bin/env python
 import sys
 import os
+import fnmatch
 import subprocess
+import clr
+import colorama
+
+#from colorama import Fore, Back, Style, init
+
+clr.AddReference('xltrail-core')
+from xltrail.core import Workbook
 
 
 VERSION = '0.0.0'
@@ -107,7 +115,7 @@ class Installer:
             if self.mode == 'global':
                 self.execute(['--unset', 'core.excludesfile'])
             self.delete_git_file(self.git_ignore_path)
-
+    
     def execute(self, args):
         command = ['git', 'config']
         if self.mode == 'global':
@@ -190,12 +198,14 @@ Commands
 --------\n
 * git xltrail env:
     Display the Git xltrail environment.
+* git xltrail version:
+    Report the version number.
 * git xltrail install:
     Install Git xltrail.
 * git xltrail uninstall:
     Uninstall Git xltrail.
-* git xltrail version:
-    Report the version number."""
+* git xltrail ls-files:
+    Show information about Excel workboosk content."""
 
 HELP_ENV = 'git xltrail env\n\nDisplay the current Git xltrail environment.'
 
@@ -229,7 +239,7 @@ class CommandParser:
         if not self.args:
             return self.help()
 
-        command = self.args[0]
+        command = self.args[0].replace('-', '_')
         args = self.args[1:]
 
         # do not process if command does not exist
@@ -285,6 +295,37 @@ class CommandParser:
         else:
             installer = Installer(mode='global')
         installer.uninstall()
+
+    def ls_files(self, *args):
+        def _ls_files(pattern):
+            files = []
+            for dirpath, dirnames, filenames in os.walk('.'):
+                if not filenames:
+                    continue
+
+                _files = fnmatch.filter(filenames, pattern)
+                if _files:
+                    for f in _files:
+                        files.append('{}/{}'.format(dirpath, f))
+            return files
+
+
+        if '-x' in args:
+            pattern = args[args.index('-x') + 1]
+            files = _ls_files(pattern)
+        else:
+            files = _ls_files('*.xls*')
+        colorama.init(strip=False)
+
+        for f in files:
+            wb = Workbook(f)
+            print(colorama.Fore.WHITE + colorama.Style.BRIGHT + f)
+            for vba_module in wb.vba_modules:
+                print(colorama.Fore.WHITE + colorama.Style.NORMAL + '    %s' % ('VBA/' + vba_module.type + '/' + vba_module.name))
+                if '-v' in args or '--verbose' in args:
+                    for line in vba_module.content.split('\n'):
+                        print(colorama.Fore.YELLOW + colorama.Style.NORMAL + '        %s' % (line))
+            print('')
 
 
 if __name__ == '__main__':
