@@ -109,8 +109,9 @@ def merge_workbook(filename, x, a, b):
     # remove deleted VBA modules
     for name in deleted_vba_modules:
         wb_a.remove_vba_module(name)
+        print(f'VBA {name} removed')
 
-    had_conflict = False
+    conflict = False
     # merge modified VBA modules
     for name in modified_vba_modules:
         vba_module_a = wb_a.get_vba_module(name)
@@ -118,20 +119,22 @@ def merge_workbook(filename, x, a, b):
         if vba_module_a.digest != vba_module_b.digest:
             vba_module_x = wb_x.get_vba_module(name)
             # perform a 3-way merge
-            conflict, merged = three_way_merge(
+            conflict_, merged = three_way_merge(
                 x=vba_module_x.content.split('\n'),
                 a=vba_module_a.content.split('\n'),
                 b=vba_module_b.content.split('\n'),
                 name=name)
-            had_conflict = had_conflict or conflict
+            conflict = conflict or conflict_
             merged = '\n'.join(merged)
             vba_module_a.content = merged
+            print(f'VBA {name} modified' + (' (conflict)' if conflict_ else ''))
     
     # add added VBA modules
     for name in added_vba_modules:
         # get vba module by name
         vba_module = [m for m in wb_b.vba_modules if m.name == name][0]
         wb_a.add_vba_module(name, vba_module.type, vba_module.content)
+        print(f'VBA {name} added')
 
     wb_a.save()
 
@@ -140,7 +143,7 @@ def merge_workbook(filename, x, a, b):
     os.rename(b, b_)
     os.rename(x, x_)
 
-    if had_conflict:
+    if conflict:
         sys.exit(1)
 
 

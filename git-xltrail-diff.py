@@ -2,33 +2,12 @@ import sys
 import os
 import shutil
 
+from core import get_vba
 from difflib import unified_diff
 from oletools.olevba3 import VBA_Parser
 import colorama
 
 from colorama import Fore, Back, Style, init
-
-
-def get_vba(workbook):
-    vba_parser = VBA_Parser(workbook)
-    vba_modules = vba_parser.extract_all_macros() if vba_parser.detect_vba_macros() else []
-
-    modules = {}
-
-    for _, _, _, content in vba_modules:
-        decoded_content = content.decode('latin-1')
-        lines = []
-        if '\r\n' in decoded_content:
-            lines = decoded_content.split('\r\n')
-        else:
-            lines = decoded_content.split('\n')
-        if lines:
-            name = lines[0].replace('Attribute VB_Name = ', '').strip('"')
-            content = [line for line in lines[1:] if not (
-                line.startswith('Attribute') and 'VB_' in line)]
-            non_empty_lines_of_code = len([c for c in content if c])
-            modules[name] = '\n'.join(content)
-    return modules
 
 
 if __name__ == '__main__':

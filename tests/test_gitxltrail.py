@@ -1,3 +1,4 @@
+import sys
 from io import StringIO
 from unittest import TestCase, mock
 
@@ -13,17 +14,27 @@ class TestLocalInstaller(TestCase):
         self.assertEqual(installer.get_git_attributes_path(), '\\path\\to\\repository\\.gitattributes')
 
     @mock.patch('git-xltrail.subprocess.run')
+    @mock.patch('git-xltrail.is_frozen', return_value=True)
     @mock.patch('git-xltrail.is_git_repository', return_value=True)
     @mock.patch('git-xltrail.os.path.exists', return_value=False)
     @mock.patch('builtins.open', new_callable=mock.mock_open)
-    def test_can_install_when_files_do_not_exist(self, mock_file_open, mock_path_exists, mock_is_git_repository, mock_run):
+    def test_can_install_when_files_do_not_exist(self, mock_file_open, mock_path_exists, \
+        mock_is_git_repository, mock_is_frozen, mock_run):
         installer = git_xltrail.Installer(mode='local', path='\\path\\to\\repository')
         installer.install()
-        mock_run.assert_called_once_with(['git', 'config', 'diff.xltrail.command', 'git-xltrail-diff.exe'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True)
+        mock_run.assert_has_calls([
+            mock.call(['git', 'config', 'diff.xltrail.command', 'git-xltrail-diff.exe'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True),
+            mock.call(['git', 'config', 'merge.xltrail.name', 'xltrail merge driver for Excel workbooks'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True),
+            mock.call(['git', 'config', 'merge.xltrail.driver', 'git-xltrail-merge.exe %P %O %A %B'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True)
+        ])
         mock_file_open.assert_has_calls([
             mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
             mock.call().__enter__(),
             mock.call().writelines('*.doc diff=xltrail\n*.docm diff=xltrail\n*.dotm diff=xltrail\n*.potm diff=xltrail\n*.ppa diff=xltrail\n*.ppam diff=xltrail\n*.ppsm diff=xltrail\n*.ppt diff=xltrail\n*.pptm diff=xltrail\n*.xla diff=xltrail\n*.xlam diff=xltrail\n*.xls diff=xltrail\n*.xlsb diff=xltrail\n*.xlsm diff=xltrail\n*.xlsx diff=xltrail\n*.xlt diff=xltrail\n*.xltm diff=xltrail\n*.xltx diff=xltrail'),
+            mock.call().__exit__(None, None, None),
+            mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
+            mock.call().__enter__(),
+            mock.call().writelines('*.xla merge=xltrail\n*.xlam merge=xltrail\n*.xls merge=xltrail\n*.xlsb merge=xltrail\n*.xlsm merge=xltrail\n*.xlsx merge=xltrail\n*.xlt merge=xltrail\n*.xltm merge=xltrail\n*.xltx merge=xltrail'),
             mock.call().__exit__(None, None, None),
             mock.call('\\path\\to\\repository\\.gitignore', 'w'),
             mock.call().__enter__(),
@@ -32,13 +43,19 @@ class TestLocalInstaller(TestCase):
         ])
 
     @mock.patch('git-xltrail.subprocess.run')
+    @mock.patch('git-xltrail.is_frozen', return_value=True)
     @mock.patch('git-xltrail.is_git_repository', return_value=True)
     @mock.patch('git-xltrail.os.path.exists', return_value=True)
     @mock.patch('builtins.open', new_callable=mock.mock_open, read_data='something\n')
-    def test_can_install_when_files_exist(self, mock_file_open, mock_path_exists, mock_is_git_repository, mock_run):
+    def test_can_install_when_files_exist(self, mock_file_open, mock_path_exists, \
+        mock_is_git_repository, mock_is_frozen, mock_run):
         installer = git_xltrail.Installer(mode='local', path='\\path\\to\\repository')
         installer.install()
-        mock_run.assert_called_once_with(['git', 'config', 'diff.xltrail.command', 'git-xltrail-diff.exe'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True)
+        mock_run.assert_has_calls([
+            mock.call(['git', 'config', 'diff.xltrail.command', 'git-xltrail-diff.exe'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True),
+            mock.call(['git', 'config', 'merge.xltrail.name', 'xltrail merge driver for Excel workbooks'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True),
+            mock.call(['git', 'config', 'merge.xltrail.driver', 'git-xltrail-merge.exe %P %O %A %B'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True)
+        ])
         mock_file_open.assert_has_calls([
             mock.call('\\path\\to\\repository\\.gitattributes', 'r'),
             mock.call().__enter__(),
@@ -47,6 +64,14 @@ class TestLocalInstaller(TestCase):
             mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
             mock.call().__enter__(),
             mock.call().writelines('*.doc diff=xltrail\n*.docm diff=xltrail\n*.dotm diff=xltrail\n*.potm diff=xltrail\n*.ppa diff=xltrail\n*.ppam diff=xltrail\n*.ppsm diff=xltrail\n*.ppt diff=xltrail\n*.pptm diff=xltrail\n*.xla diff=xltrail\n*.xlam diff=xltrail\n*.xls diff=xltrail\n*.xlsb diff=xltrail\n*.xlsm diff=xltrail\n*.xlsx diff=xltrail\n*.xlt diff=xltrail\n*.xltm diff=xltrail\n*.xltx diff=xltrail\nsomething'),
+            mock.call().__exit__(None, None, None),
+            mock.call('\\path\\to\\repository\\.gitattributes', 'r'),
+            mock.call().__enter__(),
+            mock.call().read(),
+            mock.call().__exit__(None, None, None),
+            mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
+            mock.call().__enter__(),
+            mock.call().writelines('*.xla merge=xltrail\n*.xlam merge=xltrail\n*.xls merge=xltrail\n*.xlsb merge=xltrail\n*.xlsm merge=xltrail\n*.xlsx merge=xltrail\n*.xlt merge=xltrail\n*.xltm merge=xltrail\n*.xltx merge=xltrail\nsomething'),
             mock.call().__exit__(None, None, None),
             mock.call('\\path\\to\\repository\\.gitignore', 'r'),
             mock.call().__enter__(),

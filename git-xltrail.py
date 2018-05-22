@@ -11,19 +11,12 @@ FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 
                    'doc', 'docm', 'dotm',
                    'ppt', 'ppa', 'pptm', 'potm', 'ppsm', 'ppam']
 GIT_ATTRIBUTES_DIFFER = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
-GIT_ATTRIBUTES_MERGER = ['*.' + file_ext + ' merge=xltrail' for file_ext in FILE_EXTENSIONS]
+GIT_ATTRIBUTES_MERGER = ['*.' + file_ext + ' merge=xltrail' for file_ext in ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm']]
 GIT_IGNORE = ['~$*.' + file_ext for file_ext in FILE_EXTENSIONS]
 
-# determine if running as exe or in dev mode
-if getattr(sys, 'frozen', False):
-    GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
-    GIT_XLTRAIL_MERGE = 'git-xltrail-merge.exe'
-else:
-    executable_path = sys.executable.replace('\\', '/')
-    differ_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-xltrail-diff.py').replace('\\', '/')
-    merger_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-xltrail-merge.py').replace('\\', '/')
-    GIT_XLTRAIL_DIFF = f'{executable_path} {differ_path}'
-    GIT_XLTRAIL_MERGE = f'{executable_path} {merger_path}'
+
+def is_frozen():
+    return getattr(sys, 'frozen', False)
 
 
 def is_git_repository(path):
@@ -37,6 +30,18 @@ def is_git_repository(path):
 class Installer:
 
     def __init__(self, mode='global', path=None):
+
+        # determine if running as exe or in dev mode
+        if is_frozen():
+            self.GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
+            self.GIT_XLTRAIL_MERGE = 'git-xltrail-merge.exe'
+        else:
+            executable_path = sys.executable.replace('\\', '/')
+            differ_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-xltrail-diff.py').replace('\\', '/')
+            merger_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-xltrail-merge.py').replace('\\', '/')
+            self.GIT_XLTRAIL_DIFF = f'{executable_path} {differ_path}'
+            self.GIT_XLTRAIL_MERGE = f'{executable_path} {merger_path}'
+
         if mode == 'global' and path:
             raise ValueError('must not specify repository path when installing globally')
 
@@ -58,11 +63,11 @@ class Installer:
 
     def install(self):
         # 1. gitconfig: set-up diff.xltrail.command
-        self.execute(['diff.xltrail.command', GIT_XLTRAIL_DIFF])
+        self.execute(['diff.xltrail.command', self.GIT_XLTRAIL_DIFF])
 
         # 2. gitconfig: merge-driver
         self.execute(['merge.xltrail.name', 'xltrail merge driver for Excel workbooks'])
-        self.execute(['merge.xltrail.driver', f'{GIT_XLTRAIL_MERGE} %P %O %A %B'])
+        self.execute(['merge.xltrail.driver', f'{self.GIT_XLTRAIL_MERGE} %P %O %A %B'])
 
         # 3. set-up gitattributes (define custom differ and merger)
         self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_DIFFER, operation='SET')
@@ -85,7 +90,9 @@ class Installer:
             self.execute(['--remove-section', 'diff.xltrail'])
 
         # 2. gitattributes: remove keys
-        gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES,
+        gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_DIFFER,
+                                                  operation='REMOVE')
+        gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_MERGER,
                                                   operation='REMOVE')
         # when in global mode and gitattributes is empty, update gitconfig and delete gitattributes
         if not gitattributes_keys:
