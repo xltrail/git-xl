@@ -4,6 +4,6 @@ set /p PYTHON_ARCH= < PYTHON_ARCH
 del PYTHON_ARCH
 
 python .\scripts\windows\update-version-info.py
-pyinstaller --onefile .\diff.py --name=git-xltrail-diff-%PYTHON_ARCH%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico --add-data .\xltrail-core.dll;.
-pyinstaller --onefile .\merge.py --name=git-xltrail-merge-%PYTHON_ARCH%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico --add-data .\xltrail-core.dll;.
-pyinstaller --onefile .\cli.py --name=git-xltrail-%PYTHON_ARCH%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico --add-data .\xltrail-core.dll;.
+pyinstaller --onefile .\src\diff.py --name=git-xltrail-diff-%PYTHON_ARCH%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico --add-data .\src\xltrail-core.dll;.
+pyinstaller --onefile .\src\merge.py --name=git-xltrail-merge-%PYTHON_ARCH%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico --add-data .\src\xltrail-core.dll;.
+pyinstaller --onefile .\src\cli.py --name=git-xltrail-%PYTHON_ARCH%.exe --version-file .\scripts\windows\git-xltrail-version-info.py --icon .\scripts\windows\git-xltrail-logo.ico --add-data .\src\xltrail-core.dll;.
