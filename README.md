@@ -9,9 +9,9 @@
 
 Git xltrail is an open-source Git command line extension for managing Excel workbook files in Git.
 
-The extension makes `git diff` and `git merge` work for Excel workbooks (xls, xlt, xla, xlam, xlsx, xlsm, xlsb, xltx, xltm file formats). Git xltrail does not require Excel as it works directly on the workbook file.
+The extension makes `git diff` and `git merge` work for Excel workbooks (xls, xlt, xla, xlam, xlsx, xlsm, xlsb, xltx, xltm). Git xltrail does not require Excel as it works directly on the workbook file.
 
-With Git xltrail installed, Git can compare and merge Excel workbook files just like any other source code file.
+With Git xltrail installed, Git can diff and merge Excel workbook files just like any other source code file.
 
 It is written in Python, with pre-compiled binaries available for Windows.
 

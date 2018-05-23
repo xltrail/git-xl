@@ -229,13 +229,14 @@ replacement for Excel files and .gitignore globally.\n
     in the local repository, instead globally."""
 
 HELP_LS_FILES = """git xltrail ls-files [options]\n
-Uninstalls Git xltrail:\n
+List workbooks in repository:\n
+Without any options, git xltrail ls-files will list all workbooks in your repository
+and show list of VBA modules.\n
 Options:\n
-Without any options, git xltrail uninstall will remove the git-diff drop-in
-replacement for Excel files and .gitignore globally.\n
-* --local:
-    Removes the .gitignore filters and the git-diff Excel drop-in replacement
-    in the local repository, instead globally."""
+* -v:
+   Verbose. Shows VBA code.
+* -vv:
+   Very verbose. Shows VBA code and content hash."""
 
 class CommandParser:
 
@@ -278,7 +279,7 @@ class CommandParser:
         if arg is None:
             print(HELP_GENERIC)
         else:
-            help_text = 'HELP_%s' % arg.upper()
+            help_text = 'HELP_%s' % arg.upper().replace('-', '_')
             if not hasattr(module, help_text):
                 print(f'Sorry, no usage text found for "{arg}"')
             else:
