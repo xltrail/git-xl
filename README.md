@@ -25,7 +25,6 @@ You can install the Git xltrail client on Windows, using the pre-complied binary
 
 This repository can also be built-from-source using Python and PyInstaller.
 
-
 Git xltrail requires a global installation once per-machine. This can be done by
 running:
 
@@ -55,7 +54,7 @@ diff --xltrail a/Book1.xlsb b/Book1.xlsb
  Public Function Version() As String
 -   Version = "v1.0"
 +   Version = "v1.1"
-End Sub
+ End Function
 ```
 
 
@@ -72,11 +71,54 @@ Merge made by the 'recursive' strategy.
 ```
 
 
+#### List workbooks
 
-### Ignore temporary Excel files
+List all workbooks in your repository and get meta data on workbook content.
 
-Automatically ignore temporary `~$` Excel files (e.g. when opening `Book1.xlsb`, Excel creates a temporary file called `~$Book1.xlsb`)
+```
+C:\Developer>git xltrail ls-files
+./Book1.xlsb
+    VBA/Document/ThisWorkbook
+    VBA/Document/Sheet1
+    VBA/Module/Module1
+    VBA/Module/Module2
+    VBA/Module/Module3
+```
 
+
+List all workbooks and content in your repository.
+
+```
+C:\Developer>git xltrail ls-files -v
+./Book1.xlsb
+    VBA/Document/ThisWorkbook
+        Option Explicit
+
+    VBA/Document/Sheet1
+        Option Explicit
+
+    VBA/Module/Module1
+        Option Explicit
+        Public Function Version() As String
+            Version = "v1.0"
+        End Function
+
+    VBA/Module/Module2
+        Option Explicit
+        Public Function GetVersion() As String
+            GetVersion = "v0.0.1"
+        End Function
+        Public Sub test()
+            Debug.Print "hello"
+            'asdasdsad
+        End Sub
+    VBA/Module/Module3
+        Option Explicit
+
+        Public Function GetVersion() As String
+            GetVersion = "v0.0.1"
+        End Function
+```
 
 ## Docs
 
