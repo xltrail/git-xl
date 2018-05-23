@@ -15,11 +15,9 @@ from xltrail.core import Workbook
 VERSION = '0.0.0'
 GIT_COMMIT = 'dev'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
-FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm',
-                   'doc', 'docm', 'dotm',
-                   'ppt', 'ppa', 'pptm', 'potm', 'ppsm', 'ppam']
+FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm']
 GIT_ATTRIBUTES_DIFFER = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
-GIT_ATTRIBUTES_MERGER = ['*.' + file_ext + ' merge=xltrail' for file_ext in ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm']]
+GIT_ATTRIBUTES_MERGER = ['*.' + file_ext + ' merge=xltrail' for file_ext in FILE_EXTENSIONS]
 GIT_IGNORE = ['~$*.' + file_ext for file_ext in FILE_EXTENSIONS]
 
 
@@ -229,6 +227,14 @@ replacement for Excel files and .gitignore globally.\n
     Removes the .gitignore filters and the git-diff Excel drop-in replacement
     in the local repository, instead globally."""
 
+HELP_LS_FILES = """git xltrail ls-files [options]\n
+Uninstalls Git xltrail:\n
+Options:\n
+Without any options, git xltrail uninstall will remove the git-diff drop-in
+replacement for Excel files and .gitignore globally.\n
+* --local:
+    Removes the .gitignore filters and the git-diff Excel drop-in replacement
+    in the local repository, instead globally."""
 
 class CommandParser:
 
@@ -240,6 +246,8 @@ class CommandParser:
             return self.help()
 
         command = self.args[0].replace('-', '_')
+        if command == '__help':
+            command = 'help'
         args = self.args[1:]
 
         # do not process if command does not exist
