@@ -1,5 +1,18 @@
 from unittest import TestCase
-from merge import Merge3
+from merge import Merge3, merge3_lists
+
+
+class TestThreeWayListMerge(TestCase):
+    
+    def test_added_deleted(self):
+        x = ['Module1']
+        a = ['Module1', 'Module2']
+        b = ['Module1', 'Module3']
+        added, deleted, maybe_modified = merge3_lists(a=a, b=b, x=x)
+        self.assertEqual(added, ['Module3'])
+        self.assertEqual(deleted, [])
+        self.assertEqual(maybe_modified, ['Module1'])
+
 
 
 class TestThreeWayMerge(TestCase):

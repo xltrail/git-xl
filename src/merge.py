@@ -547,6 +547,26 @@ class Merge3:
 
         return unc
 
+def merge3_lists(a, b, x):
+    b_added = list(set(b) - set(x))
+    b_deleted = list(set(x) - set(b))
+    maybe_modified = list(set(a) & set(b))
+
+    added = []
+    deleted = []
+
+    for name in b_deleted:
+        if name in a:
+            deleted.append(name)
+    
+    for name in b_added:
+        if name in a:
+            maybe_modified.append(name)
+        else:
+            added.append(name)
+    
+    maybe_modified = list(set(maybe_modified))
+    return added, deleted, maybe_modified
 
 
 
@@ -578,34 +598,24 @@ def merge_workbook(filename, x, a, b):
     vba_modules_b = [vba_module.name for vba_module in wb_b.vba_modules if vba_module.type != 'Document']
     vba_modules_x = [vba_module.name for vba_module in wb_x.vba_modules if vba_module.type != 'Document']
 
-    b_added = list(set(vba_modules_b) - set(vba_modules_x))
-    b_deleted = list(set(vba_modules_x) - set(vba_modules_b))
-    b_modified = list(set(vba_modules_a) & set(vba_modules_b))
+    # perform 3-way list merge
+    added, deleted, maybe_modified = merge3_lists(a=vba_modules_a, b=vba_modules_b, x=vba_modules_x)
 
     # remove deleted VBA modules
-    for name in b_deleted:
-        result = [m for m in wb_a.vba_modules if m.name == name]
-        if result:
-            vba_module = result[0]
-            print(f'--- a/{filename}/VBA/{vba_module.type}/{name}')
-            wb_a.remove_vba_module(name)
+    for name in deleted:
+        vba_module = [m for m in wb_a.vba_modules if m.name == name][0]
+        print(f'--- a/{filename}/VBA/{vba_module.type}/{name}')
+        wb_a.remove_vba_module(name)
 
     # add VBA modules
-    for name in b_added:
-        result = [m for m in wb_a.vba_modules if m.name == name]
-        if result:
-            # `new` module already present in a: this is a merge, and not an insert
-            vba_module = result[0]
-            b_modified.append(vba_module.name)
-        else:
-            vba_module = [m for m in wb_b.vba_modules if m.name == name][0]
-            wb_a.add_vba_module(name, vba_module.type, vba_module.content)
-            print(f'+++ b/{filename}/VBA/{vba_module.type}/{name}')
+    for name in added:
+        vba_module = [m for m in wb_b.vba_modules if m.name == name][0]
+        wb_a.add_vba_module(name, vba_module.type, vba_module.content)
+        print(f'+++ b/{filename}/VBA/{vba_module.type}/{name}')
 
-    b_modified = list(set(b_modified))
     conflict = False
     # merge modified VBA modules
-    for name in b_modified:
+    for name in maybe_modified:
         vba_module_a = wb_a.get_vba_module(name)
         vba_module_b = wb_b.get_vba_module(name)
         if vba_module_a.digest != vba_module_b.digest:
