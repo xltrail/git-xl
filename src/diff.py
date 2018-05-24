@@ -37,7 +37,7 @@ if __name__ == '__main__':
             diffs.append({
                 'a': '--- /dev/null',
                 'b': '+++ b/' + workbook_name + '/VBA/' + vba_a.type + '/' + module_a,
-                'diff': '\n'.join([Fore.GREEN + '+' + line for line in vba_a.split('\n')])
+                'diff': '\n'.join([Fore.GREEN + '+' + line for line in vba_a.content.split('\n')])
             })
         elif vba_a.digest != workbook_b_modules[module_a].digest:
             diffs.append({

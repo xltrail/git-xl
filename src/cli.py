@@ -44,8 +44,8 @@ class Installer:
             self.GIT_XLTRAIL_MERGE = 'git-xltrail-merge.exe'
         else:
             executable_path = sys.executable.replace('\\', '/')
-            differ_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-xltrail-diff.py').replace('\\', '/')
-            merger_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-xltrail-merge.py').replace('\\', '/')
+            differ_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'diff.py').replace('\\', '/')
+            merger_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'merge.py').replace('\\', '/')
             self.GIT_XLTRAIL_DIFF = f'{executable_path} {differ_path}'
             self.GIT_XLTRAIL_MERGE = f'{executable_path} {merger_path}'
 

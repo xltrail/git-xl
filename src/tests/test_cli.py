@@ -4,7 +4,6 @@ from io import StringIO
 from unittest import TestCase, mock
 
 
-
 class TestLocalInstaller(TestCase):
 
     @mock.patch('cli.is_git_repository', return_value=True)
