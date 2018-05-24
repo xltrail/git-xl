@@ -576,23 +576,36 @@ def merge_workbook(filename, x, a, b):
     # as soon as sheets are implemented, we can lift the restriction
     vba_modules_a = [vba_module.name for vba_module in wb_a.vba_modules if vba_module.type != 'Document']
     vba_modules_b = [vba_module.name for vba_module in wb_b.vba_modules if vba_module.type != 'Document']
+    vba_modules_x = [vba_module.name for vba_module in wb_x.vba_modules if vba_module.type != 'Document']
 
-    modified_vba_modules = list(set(vba_modules_a) & set(vba_modules_b))
-    added_vba_modules = list(set(vba_modules_b) - set(vba_modules_a))
-    deleted_vba_modules = list(set(vba_modules_a) - set(vba_modules_b))
-
-    # added vba modules    
-    vba_modules = dict([(m.name, m) for m in wb_a.vba_modules if m.type != 'Document'])
+    b_added = list(set(vba_modules_b) - set(vba_modules_x))
+    b_deleted = list(set(vba_modules_x) - set(vba_modules_b))
+    b_modified = list(set(vba_modules_a) & set(vba_modules_b))
 
     # remove deleted VBA modules
-    for name in deleted_vba_modules:
-        vba_module = [m for m in wb_a.vba_modules if m.name == name][0]
-        print(f'--- a/{filename}/VBA/{vba_module.type}/{name}')
-        wb_a.remove_vba_module(name)
+    for name in b_deleted:
+        result = [m for m in wb_a.vba_modules if m.name == name]
+        if result:
+            vba_module = result[0]
+            print(f'--- a/{filename}/VBA/{vba_module.type}/{name}')
+            wb_a.remove_vba_module(name)
 
+    # add VBA modules
+    for name in b_added:
+        result = [m for m in wb_a.vba_modules if m.name == name]
+        if result:
+            # `new` module already present in a: this is a merge, and not an insert
+            vba_module = result[0]
+            b_modified.append(vba_module.name)
+        else:
+            vba_module = [m for m in wb_b.vba_modules if m.name == name][0]
+            wb_a.add_vba_module(name, vba_module.type, vba_module.content)
+            print(f'+++ b/{filename}/VBA/{vba_module.type}/{name}')
+
+    b_modified = list(set(b_modified))
     conflict = False
     # merge modified VBA modules
-    for name in modified_vba_modules:
+    for name in b_modified:
         vba_module_a = wb_a.get_vba_module(name)
         vba_module_b = wb_b.get_vba_module(name)
         if vba_module_a.digest != vba_module_b.digest:
@@ -611,13 +624,6 @@ def merge_workbook(filename, x, a, b):
                 print(f'CONFLICT (VBA content): Merge conflict in {filename}/VBA/{m.type}/{m.name}')
             else:
                 print(f'--- a/{filename}/VBA/{m.type}/{m.name} +++ b/{filename}/VBA/{m.type}/{m.name}')
-
-    # add added VBA modules
-    for name in added_vba_modules:
-        # get vba module by name
-        vba_module = [m for m in wb_b.vba_modules if m.name == name][0]
-        wb_a.add_vba_module(name, vba_module.type, vba_module.content)
-        print(f'+++ b/{filename}/VBA/{vba_module.type}/{name}')
 
     wb_a.save()
 
