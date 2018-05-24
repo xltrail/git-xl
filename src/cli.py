@@ -7,8 +7,6 @@ import subprocess
 import clr
 import colorama
 
-#from colorama import Fore, Back, Style, init
-
 clr.AddReference('xltrail-core')
 from xltrail.core import Workbook
 
@@ -191,7 +189,8 @@ HELP_GENERIC = f"""{GIT_XLTRAIL_VERSION}
 git xltrail <command> [<args>]\n
 Git xltrail is a system for managing Excel workbook files in
 association with a Git repository. Git xltrail:
-* installs a special git-diff for Excel files 
+* installs a special git-diff for Excel workbook files 
+* installs a special git-merge for Excel workbook files 
 * makes Git ignore temporary Excel files via .gitignore\n
 Commands
 --------\n
