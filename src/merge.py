@@ -608,7 +608,7 @@ def merge_workbook(filename, x, a, b):
             vba_module_a.content = merged
             m = vba_modules[name]
             if is_conflicted:
-                print(f'CONFLICT (content): Merge conflict in {filename}/VBA/{m.type}/{m.name}')
+                print(f'CONFLICT (VBA content): Merge conflict in {filename}/VBA/{m.type}/{m.name}')
             else:
                 print(f'--- a/{filename}/VBA/{m.type}/{m.name} +++ b/{filename}/VBA/{m.type}/{m.name}')
 
