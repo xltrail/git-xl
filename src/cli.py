@@ -1,19 +1,27 @@
 #!/usr/bin/env python
 import sys
 import os
+import fnmatch
+import argparse
 import subprocess
+import clr
+import colorama
+
+clr.AddReference('xltrail-core')
+from xltrail.core import Workbook
 
 
 VERSION = '0.0.0'
-GIT_COMMIT = ''
+GIT_COMMIT = 'dev'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
-GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
-
-FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm',
-                   'doc', 'docm', 'dotm',
-                   'ppt', 'ppa', 'pptm', 'potm', 'ppsm', 'ppam']
-GIT_ATTRIBUTES = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
+FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm']
+GIT_ATTRIBUTES_DIFFER = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
+GIT_ATTRIBUTES_MERGER = ['*.' + file_ext + ' merge=xltrail' for file_ext in FILE_EXTENSIONS]
 GIT_IGNORE = ['~$*.' + file_ext for file_ext in FILE_EXTENSIONS]
+
+
+def is_frozen():
+    return getattr(sys, 'frozen', False)
 
 
 def is_git_repository(path):
@@ -27,6 +35,18 @@ def is_git_repository(path):
 class Installer:
 
     def __init__(self, mode='global', path=None):
+
+        # determine if running as exe or in dev mode
+        if is_frozen():
+            self.GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
+            self.GIT_XLTRAIL_MERGE = 'git-xltrail-merge.exe'
+        else:
+            executable_path = sys.executable.replace('\\', '/')
+            differ_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'diff.py').replace('\\', '/')
+            merger_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'merge.py').replace('\\', '/')
+            self.GIT_XLTRAIL_DIFF = f'{executable_path} {differ_path}'
+            self.GIT_XLTRAIL_MERGE = f'{executable_path} {merger_path}'
+
         if mode == 'global' and path:
             raise ValueError('must not specify repository path when installing globally')
 
@@ -48,15 +68,20 @@ class Installer:
 
     def install(self):
         # 1. gitconfig: set-up diff.xltrail.command
-        self.execute(['diff.xltrail.command', GIT_XLTRAIL_DIFF])
+        self.execute(['diff.xltrail.command', self.GIT_XLTRAIL_DIFF])
 
-        # 2. set-up gitattributes (define differ for Excel file formats)
-        self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES, operation='SET')
+        # 2. gitconfig: merge-driver
+        self.execute(['merge.xltrail.name', 'xltrail merge driver for Excel workbooks'])
+        self.execute(['merge.xltrail.driver', f'{self.GIT_XLTRAIL_MERGE} %P %O %A %B'])
 
-        # 3. set-up gitignore (define differ for Excel file formats)
+        # 3. set-up gitattributes (define custom differ and merger)
+        self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_DIFFER, operation='SET')
+        self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_MERGER, operation='SET')
+
+        # 4. set-up gitignore (define differ for Excel file formats)
         self.update_git_file(path=self.git_ignore_path, keys=GIT_IGNORE, operation='SET')
 
-        # when in global mode, update gitconfig
+        # 5. update gitconfig (only relevent when running in `global` mode)
         if self.mode == 'global':
             # set core.attributesfile
             self.execute(['core.attributesfile', self.git_attributes_path])
@@ -70,7 +95,9 @@ class Installer:
             self.execute(['--remove-section', 'diff.xltrail'])
 
         # 2. gitattributes: remove keys
-        gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES,
+        gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_DIFFER,
+                                                  operation='REMOVE')
+        gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_MERGER,
                                                   operation='REMOVE')
         # when in global mode and gitattributes is empty, update gitconfig and delete gitattributes
         if not gitattributes_keys:
@@ -85,7 +112,7 @@ class Installer:
             if self.mode == 'global':
                 self.execute(['--unset', 'core.excludesfile'])
             self.delete_git_file(self.git_ignore_path)
-
+    
     def execute(self, args):
         command = ['git', 'config']
         if self.mode == 'global':
@@ -162,18 +189,21 @@ HELP_GENERIC = f"""{GIT_XLTRAIL_VERSION}
 git xltrail <command> [<args>]\n
 Git xltrail is a system for managing Excel workbook files in
 association with a Git repository. Git xltrail:
-* installs a special git-diff for Excel files 
+* installs a special git-diff for Excel workbook files 
+* installs a special git-merge for Excel workbook files 
 * makes Git ignore temporary Excel files via .gitignore\n
 Commands
 --------\n
 * git xltrail env:
     Display the Git xltrail environment.
+* git xltrail version:
+    Report the version number.
 * git xltrail install:
     Install Git xltrail.
 * git xltrail uninstall:
     Uninstall Git xltrail.
-* git xltrail version:
-    Report the version number."""
+* git xltrail ls-files:
+    Show information about Excel workboosk content."""
 
 HELP_ENV = 'git xltrail env\n\nDisplay the current Git xltrail environment.'
 
@@ -197,6 +227,15 @@ replacement for Excel files and .gitignore globally.\n
     Removes the .gitignore filters and the git-diff Excel drop-in replacement
     in the local repository, instead globally."""
 
+HELP_LS_FILES = """git xltrail ls-files [options]\n
+List workbooks in repository:\n
+Without any options, git xltrail ls-files will list all workbooks in your repository
+and show list of VBA modules.\n
+Options:\n
+* -v:
+   Verbose. Shows VBA code.
+* -vv:
+   Very verbose. Shows VBA code and content hash."""
 
 class CommandParser:
 
@@ -207,7 +246,9 @@ class CommandParser:
         if not self.args:
             return self.help()
 
-        command = self.args[0]
+        command = self.args[0].replace('-', '_')
+        if command == '__help':
+            command = 'help'
         args = self.args[1:]
 
         # do not process if command does not exist
@@ -237,21 +278,20 @@ class CommandParser:
         if arg is None:
             print(HELP_GENERIC)
         else:
-            help_text = 'HELP_%s' % arg.upper()
+            help_text = 'HELP_%s' % arg.upper().replace('-', '_')
             if not hasattr(module, help_text):
                 print(f'Sorry, no usage text found for "{arg}"')
             else:
                 print(getattr(module, help_text))
 
     def install(self, *args):
-        if args:
-            if args[0] == '--local':
-                installer = Installer(mode='local', path=os.getcwd())
-            else:
-                return print(
-                    f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
-        else:
+        if not args or args[0] == '--global':
             installer = Installer(mode='global')
+        elif args[0] == '--local':
+            installer = Installer(mode='local', path=os.getcwd())
+        else:
+            return print(
+                f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
         installer.install()
 
     def uninstall(self, *args):
@@ -264,6 +304,39 @@ class CommandParser:
         else:
             installer = Installer(mode='global')
         installer.uninstall()
+
+    def ls_files(self, *args):
+        def _ls_files(pattern):
+            files = []
+            for dirpath, dirnames, filenames in os.walk('.'):
+                if not filenames:
+                    continue
+
+                _files = fnmatch.filter(filenames, pattern)
+                if _files:
+                    for f in _files:
+                        files.append('{}/{}'.format(dirpath, f))
+            return files
+
+
+        if '-x' in args:
+            pattern = args[args.index('-x') + 1]
+            files = _ls_files(pattern)
+        else:
+            files = _ls_files('*.xls*')
+        colorama.init(strip=False)
+
+        for f in files:
+            wb = Workbook(f)
+            print(colorama.Fore.WHITE + colorama.Style.BRIGHT + f)
+            for vba_module in wb.vba_modules:
+                print(colorama.Fore.WHITE + colorama.Style.NORMAL + '    %s' % ('VBA/' + vba_module.type + '/' + vba_module.name))
+                if '-v' in args or '-vv' in args or '--verbose' in args:
+                    if '-vv' in args:
+                        print(colorama.Style.DIM + '    [%s]' % vba_module.digest[:7])
+                    for line in vba_module.content.split('\n'):
+                        print(colorama.Fore.YELLOW + colorama.Style.NORMAL + '        %s' % (line))
+            print('')
 
 
 if __name__ == '__main__':

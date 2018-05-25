@@ -55,7 +55,7 @@ with open(path, 'w') as f:
     f.write(s)
 
 # update git-xltrail.py (VERSION and COMMIT)
-path = 'git-xltrail.py'
+path = 'src\\cli.py'
 with open(path, 'r') as f:
     s = f.read()
 

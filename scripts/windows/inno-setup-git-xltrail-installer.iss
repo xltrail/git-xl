@@ -20,6 +20,16 @@
   #pragma error PathToDiffX64Binary + " does not exist, please build it first."
 #endif
 
+#define PathToMergeX86Binary "..\..\git-xltrail-merge-x86.exe"
+#ifnexist PathToMergeX86Binary
+  #pragma error PathToMergeX86Binary + " does not exist, please build it first."
+#endif
+
+#define PathToMergeX64Binary "..\..\git-xltrail-merge-x64.exe"
+#ifnexist PathToMergeX64Binary
+  #pragma error PathToMergeX64Binary + " does not exist, please build it first."
+#endif
+
 ; Arbitrarily choose the x86 executable here as both have the version embedded.
 #define MyVersionInfoVersion GetFileVersion(PathToX86Binary)
 
@@ -68,6 +78,8 @@ Filename: "{code:GetExistingGitInstallation}\git-xltrail-uninstaller.exe"; Param
 [Files]
 Source: {#PathToDiffX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-diff.exe"; Check: not Is64BitInstallMode
 Source: {#PathToDiffX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-diff.exe"; Check: Is64BitInstallMode
+Source: {#PathToMergeX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-merge.exe"; Check: not Is64BitInstallMode
+Source: {#PathToMergeX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-merge.exe"; Check: Is64BitInstallMode
 Source: {#PathToX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail.exe"; Check: not Is64BitInstallMode
 Source: {#PathToX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail.exe"; Check: Is64BitInstallMode
 
