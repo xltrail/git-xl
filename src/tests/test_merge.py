@@ -13,6 +13,14 @@ class TestThreeWayListMerge(TestCase):
         self.assertEqual(deleted, [])
         self.assertEqual(maybe_modified, ['Module1'])
 
+    def test_deleted_modified(self):
+        x = ['Module1', 'Module2']
+        a = ['Module1']
+        b = ['Module1', 'Module2']
+        added, deleted, maybe_modified = merge3_lists(a=a, b=b, x=x)
+        self.assertEqual(added, [])
+        self.assertEqual(deleted, [])
+        self.assertEqual(maybe_modified, ['Module1', 'Module2'])
 
 
 class TestThreeWayMerge(TestCase):

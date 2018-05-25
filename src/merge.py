@@ -550,7 +550,7 @@ class Merge3:
 def merge3_lists(a, b, x):
     b_added = list(set(b) - set(x))
     b_deleted = list(set(x) - set(b))
-    maybe_modified = list(set(a) & set(b))
+    maybe_modified = list(sorted(set(b) & set(x)))
 
     added = []
     deleted = []
@@ -565,7 +565,9 @@ def merge3_lists(a, b, x):
         else:
             added.append(name)
     
-    maybe_modified = list(set(maybe_modified))
+    maybe_modified = sorted(list(set(maybe_modified)))
+    added = sorted(added)
+    deleted = sorted(deleted)
     return added, deleted, maybe_modified
 
 
@@ -618,20 +620,35 @@ def merge_workbook(filename, x, a, b):
     for name in maybe_modified:
         vba_module_a = wb_a.get_vba_module(name)
         vba_module_b = wb_b.get_vba_module(name)
-        if vba_module_a.digest != vba_module_b.digest:
+
+        digest_a = vba_module_a.digest if vba_module_a else ''
+        digest_b = vba_module_b.digest if vba_module_b else ''
+
+        if digest_a != digest_b:
             vba_module_x = wb_x.get_vba_module(name)
+            content_a = vba_module_a.content.split('\n') if vba_module_a else []
+            content_b = vba_module_b.content.split('\n') if vba_module_b else []
+            content_x = vba_module_x.content.split('\n') if vba_module_x else []
             # perform a 3-way merge
             m3 = Merge3(
-                a=vba_module_a.content.split('\n'),
-                b=vba_module_b.content.split('\n'),
-                base=vba_module_x.content.split('\n'))
+                a=content_a,
+                b=content_b,
+                base=content_x)
             is_conflicted = m3.is_conflicted()
             conflict = conflict or is_conflicted
             merged = '\n'.join([line for line in m3.merge_lines(name_a=f'{name}:ours', name_b=f'{name}:theirs')])
-            vba_module_a.content = merged
-            m = vba_modules[name]
+            modify_delete_conflict = False
+            if vba_module_a:
+                vba_module_a.content = merged
+            else:
+                modify_delete_conflict = True
+                wb_a.add_vba_module(name, vba_module_b.type, merged)
+            m = wb_a.get_vba_module(name)
             if is_conflicted:
-                print(f'CONFLICT (VBA content): Merge conflict in {filename}/VBA/{m.type}/{m.name}')
+                if modify_delete_conflict:
+                    print(f'CONFLICT (VBA modify/delete): {filename}/VBA/{m.type}/{m.name} deleted in one branch and modified in other branch')
+                else:
+                    print(f'CONFLICT (VBA content): Merge conflict in {filename}/VBA/{m.type}/{m.name}')
             else:
                 print(f'--- a/{filename}/VBA/{m.type}/{m.name} +++ b/{filename}/VBA/{m.type}/{m.name}')
 
