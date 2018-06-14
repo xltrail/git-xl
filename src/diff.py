@@ -39,14 +39,14 @@ if __name__ == '__main__':
             diffs.append({
                 'a': '--- /dev/null',
                 'b': '+++ b/' + workbook_name + '/Worksheets/' + a_name,
-                'diff': Fore.GREEN + '+' + ' cell' + ('' if a_sheet.cells.Count == 1 else 's')
+                'diff': Fore.GREEN + '+' + str(a_sheet.cells.Count) + ' cell' + ('' if a_sheet.cells.Count == 1 else 's')
             })
         elif a_sheet.digest != b_sheets[a_name].digest:
             b_sheet = b_sheets[a_name]
             diffs.append({
                 'a': '--- a/' + workbook_name + '/Worksheets/' + a_name,
                 'b': '+++ b/' + workbook_name + '/Worksheets/' + a_name,
-                'diff': Fore.RED + '-' + str(a_sheet.cells.Count) + ' cell' + ('' if a_sheet.cells.Count == 1 else 's') + '\n' + Fore.GREEN + '+' + str(b_sheet.cells.Count) + ' cell' + ('' if b_sheet.cells.Count == 1 else 's')
+                'diff': Fore.RED + '-' + str(b_sheet.cells.Count) + ' cell' + ('' if b_sheet.cells.Count == 1 else 's') + '\n' + Fore.GREEN + '+' + str(a_sheet.cells.Count) + ' cell' + ('' if a_sheet.cells.Count == 1 else 's')
             })
 
     for b_name, b_sheet in b_sheets.items():
