@@ -1,5 +1,9 @@
 skip_branch_with_pr: true
 
+environment:
+  NETLIFY_BUILD_HOOK:
+    secure: B+WxLXotvuRzEvMtuTWijhs3s+jvnGifsmNIMEf7ll0=
+
 version: '{build}'
 init:
   # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
@@ -20,6 +24,7 @@ install:
   - secure-file\tools\secure-file -decrypt scripts\windows\key.p12.enc -secret %secure%
   - C:\Python36\Scripts\pip install -r requirements.txt
   - C:\Python36-x64\Scripts\pip install -r requirements.txt
+  - choco install curl
 
 build_script:
   - C:\Python36\python .\scripts\windows\update-version-info.py
@@ -50,6 +55,9 @@ test_script:
   - C:\Python36\python -m unittest discover src -vv
   - C:\Python36-x64\python -m unittest discover src -vv
 
+
+on_success:
+  - ps: if ($env:APPVEYOR_REPO_TAG -eq $TRUE) { curl -X POST -d '' https://api.netlify.com/build_hooks/$env:NETLIFY_BUILD_HOOK }
 
 artifacts:
   - path: git-xltrail-windows-*.exe
