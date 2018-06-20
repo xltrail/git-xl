@@ -1,4 +1,4 @@
-# Git Excel Extension
+# xltrail client - A Git Extension for Excel
 
 | Windows | macOS |
 | :---- | :------ |
