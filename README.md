@@ -15,7 +15,7 @@ With Git xltrail installed, Git can diff and merge Excel workbook files just lik
 
 It is written in Python, with pre-compiled binaries available for Windows.
 
-Installation instructions and docs are available at [https://www.xltrail.com/git-xltrail](https://www.xltrail.com/git-xltrail).
+Installation instructions and docs are available at [https://www.xltrail.com/client](https://www.xltrail.com/client).
 
 
 ## Getting Started 
@@ -122,7 +122,7 @@ C:\Developer>git xltrail ls-files -v
 
 ## Docs
 
-Docs are available at [https://www.xltrail.com/git-xltrail](https://www.xltrail.com/git-xltrail).
+Docs are available at [https://www.xltrail.com/client](https://www.xltrail.com/client).
 
 
 ## Contributing
