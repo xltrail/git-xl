@@ -203,7 +203,7 @@ Commands
 * git xltrail uninstall:
     Uninstall Git xltrail.
 * git xltrail ls-files:
-    Show information about Excel workboosk content."""
+    Show information about Excel workbooks content."""
 
 HELP_ENV = 'git xltrail env\n\nDisplay the current Git xltrail environment.'
 
