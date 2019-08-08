@@ -15,8 +15,8 @@ VERSION = '0.0.0'
 GIT_COMMIT = 'dev'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm']
-GIT_ATTRIBUTES_DIFFER = ['*.' + file_ext + ' diff=xltrail' for file_ext in FILE_EXTENSIONS]
-GIT_ATTRIBUTES_MERGER = ['*.' + file_ext + ' merge=xltrail' for file_ext in FILE_EXTENSIONS]
+GIT_ATTRIBUTES_DIFFER = ['*.' + file_ext + ' diff=xl' for file_ext in FILE_EXTENSIONS]
+GIT_ATTRIBUTES_MERGER = ['*.' + file_ext + ' merge=xl' for file_ext in FILE_EXTENSIONS]
 GIT_IGNORE = ['~$*.' + file_ext for file_ext in FILE_EXTENSIONS]
 
 
@@ -38,14 +38,14 @@ class Installer:
 
         # determine if running as exe or in dev mode
         if is_frozen():
-            self.GIT_XLTRAIL_DIFF = 'git-xltrail-diff.exe'
-            self.GIT_XLTRAIL_MERGE = 'git-xltrail-merge.exe'
+            self.GIT_XL_DIFF = 'git-xl-diff.exe'
+            self.GIT_XL_MERGE = 'git-xl-merge.exe'
         else:
             executable_path = sys.executable.replace('\\', '/')
             differ_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'diff.py').replace('\\', '/')
             merger_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'merge.py').replace('\\', '/')
-            self.GIT_XLTRAIL_DIFF = f'{executable_path} {differ_path}'
-            self.GIT_XLTRAIL_MERGE = f'{executable_path} {merger_path}'
+            self.GIT_XL_DIFF = f'{executable_path} {differ_path}'
+            self.GIT_XL_MERGE = f'{executable_path} {merger_path}'
 
         if mode == 'global' and path:
             raise ValueError('must not specify repository path when installing globally')
@@ -67,12 +67,12 @@ class Installer:
         self.git_ignore_path = self.get_git_ignore_path()
 
     def install(self):
-        # 1. gitconfig: set-up diff.xltrail.command
-        self.execute(['diff.xltrail.command', self.GIT_XLTRAIL_DIFF])
+        # 1. gitconfig: set-up diff.xl.command
+        self.execute(['diff.xl.command', self.GIT_XL_DIFF])
 
         # 2. gitconfig: merge-driver
-        self.execute(['merge.xltrail.name', 'xltrail merge driver for Excel workbooks'])
-        self.execute(['merge.xltrail.driver', f'{self.GIT_XLTRAIL_MERGE} %P %O %A %B'])
+        self.execute(['merge.xl.name', 'xl merge driver for Excel workbooks'])
+        self.execute(['merge.xl.driver', f'{self.GIT_XL_MERGE} %P %O %A %B'])
 
         # 3. set-up gitattributes (define custom differ and merger)
         self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_DIFFER, operation='SET')
@@ -89,10 +89,10 @@ class Installer:
             self.execute(['core.excludesfile', self.git_ignore_path])
 
     def uninstall(self):
-        # 1. gitconfig: remove diff.xltrail.command from gitconfig
+        # 1. gitconfig: remove diff.xl.command from gitconfig
         keys = self.execute(['--list']).split('\n')
-        if [key for key in keys if key.startswith('diff.xltrail.command')]:
-            self.execute(['--remove-section', 'diff.xltrail'])
+        if [key for key in keys if key.startswith('diff.xl.command')]:
+            self.execute(['--remove-section', 'diff.xl'])
 
         # 2. gitattributes: remove keys
         gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_DIFFER,
@@ -183,53 +183,53 @@ class Installer:
             os.remove(path)
 
 
-GIT_XLTRAIL_VERSION = f'git-xltrail/{VERSION} (windows; Python {PYTHON_VERSION}); git {GIT_COMMIT}'
+GIT_XL_VERSION = f'git-xl/{VERSION} (windows; Python {PYTHON_VERSION}); git {GIT_COMMIT}'
 
-HELP_GENERIC = f"""{GIT_XLTRAIL_VERSION}
-git xltrail <command> [<args>]\n
-Git xltrail is a system for managing Excel workbook files in
-association with a Git repository. Git xltrail:
+HELP_GENERIC = f"""{GIT_XL_VERSION}
+git xl <command> [<args>]\n
+Git xl is a system for managing Excel workbook files in
+association with a Git repository. Git xl:
 * installs a special git-diff for Excel workbook files 
 * installs a special git-merge for Excel workbook files 
 * makes Git ignore temporary Excel files via .gitignore\n
 Commands
 --------\n
-* git xltrail env:
-    Display the Git xltrail environment.
-* git xltrail version:
+* git xl env:
+    Display the Git xl environment.
+* git xl version:
     Report the version number.
-* git xltrail install:
-    Install Git xltrail.
-* git xltrail uninstall:
-    Uninstall Git xltrail.
-* git xltrail ls-files:
+* git xl install:
+    Install Git xl.
+* git xl uninstall:
+    Uninstall Git xl.
+* git xl ls-files:
     Show information about Excel workbooks content."""
 
-HELP_ENV = 'git xltrail env\n\nDisplay the current Git xltrail environment.'
+HELP_ENV = 'git xl env\n\nDisplay the current Git XL environment.'
 
-HELP_INSTALL = """git xltrail install [options]\n
-Perform the following actions to ensure that Git xltrail is setup properly:\n
+HELP_INSTALL = """git xl install [options]\n
+Perform the following actions to ensure that Git xl is setup properly:\n
 * Set up .gitignore to make Git ignore temporary Excel files.
 * Install a git-diff drop-in replacement for Excel files.\n
 Options:\n
-Without any options, git xltrail install will setup the Excel differ and
+Without any options, git xl install will setup the Excel differ and
 .gitignore globally.\n
 * --local:
     Sets the .gitignore filters and the git-diff Excel drop-in replacement
     in the local repository, instead of the global git config (~/.gitconfig)."""
 
-HELP_UNINSTALL = """git xltrail uninstall [options]\n
-Uninstalls Git xltrail:\n
+HELP_UNINSTALL = """git xl uninstall [options]\n
+Uninstalls Git XL:\n
 Options:\n
-Without any options, git xltrail uninstall will remove the git-diff drop-in
+Without any options, git xl uninstall will remove the git-diff drop-in
 replacement for Excel files and .gitignore globally.\n
 * --local:
     Removes the .gitignore filters and the git-diff Excel drop-in replacement
     in the local repository, instead globally."""
 
-HELP_LS_FILES = """git xltrail ls-files [options]\n
+HELP_LS_FILES = """git xl ls-files [options]\n
 List workbooks in repository:\n
-Without any options, git xltrail ls-files will list all workbooks in your repository
+Without any options, git xl ls-files will list all workbooks in your repository
 and show list of VBA modules.\n
 Options:\n
 * -v:
@@ -254,17 +254,17 @@ class CommandParser:
         # do not process if command does not exist
         if not hasattr(self, command):
             return print(
-                f"""Error: unknown command "{command}" for "git-xltrail"\nRun 'git-xltrail --help' for usage.""")
+                f"""Error: unknown command "{command}" for "git-xl"\nRun 'git-xl --help' for usage.""")
 
         # execute command
         getattr(self, command)(*args)
 
     def version(self, *args):
-        print(GIT_XLTRAIL_VERSION)
+        print(GIT_XL_VERSION)
 
     def env(self):
         current_path = os.getcwd()
-        p = GIT_XLTRAIL_VERSION + '\n\n'
+        p = GIT_XL_VERSION + '\n\n'
         p += 'LocalWorkingDir=' + (current_path if is_git_repository(current_path) else '') + '\n'
         p += 'LocalGitIgnore=' + (
             os.path.join(current_path, '.gitignore') if is_git_repository(current_path) else '') + '\n'
@@ -291,7 +291,7 @@ class CommandParser:
             installer = Installer(mode='local', path=os.getcwd())
         else:
             return print(
-                f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
+                f"""Invalid option "{args[0]}" for "git-xl install"\nRun 'git-xl --help' for usage.""")
         installer.install()
 
     def uninstall(self, *args):
@@ -300,7 +300,7 @@ class CommandParser:
                 installer = Installer(mode='local', path=os.getcwd())
             else:
                 return print(
-                    f"""Invalid option "{args[0]}" for "git-xltrail install"\nRun 'git-xltrail --help' for usage.""")
+                    f"""Invalid option "{args[0]}" for "git-xl install"\nRun 'git-xl --help' for usage.""")
         else:
             installer = Installer(mode='global')
         installer.uninstall()

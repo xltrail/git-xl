@@ -15,12 +15,12 @@ VSVersionInfo(
       StringTable(
         u'040904B0',
         [StringStruct(u'CompanyName', u'Zoomer Analytics LLC'),
-        StringStruct(u'FileDescription', u'Git xltrail'),
+        StringStruct(u'FileDescription', u'Git XL'),
         StringStruct(u'FileVersion', u'0.0.0'),
-        StringStruct(u'InternalName', u'git-xltrail'),
+        StringStruct(u'InternalName', u'git-xl'),
         StringStruct(u'LegalCopyright', u'Zoomer Analytics LLC'),
-        StringStruct(u'OriginalFilename', u'git-xltrail'),
-        StringStruct(u'ProductName', u'Git xltrail'),
+        StringStruct(u'OriginalFilename', u'git-xl'),
+        StringStruct(u'ProductName', u'Git XL'),
         StringStruct(u'ProductVersion', u'0.0.0')])
       ]), 
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])

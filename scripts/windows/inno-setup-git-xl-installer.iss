@@ -1,31 +1,31 @@
-#define MyAppName "Git xltrail"
+#define MyAppName "Git XL"
 
-#define PathToX86Binary "..\..\git-xltrail-x86.exe"
+#define PathToX86Binary "..\..\git-xl-x86.exe"
 #ifnexist PathToX86Binary
   #pragma error PathToX86Binary + " does not exist, please build it first."
 #endif
 
-#define PathToX64Binary "..\..\git-xltrail-x64.exe"
+#define PathToX64Binary "..\..\git-xl-x64.exe"
 #ifnexist PathToX64Binary
   #pragma error PathToX64Binary + " does not exist, please build it first."
 #endif
 
-#define PathToDiffX86Binary "..\..\git-xltrail-diff-x86.exe"
+#define PathToDiffX86Binary "..\..\git-xl-diff-x86.exe"
 #ifnexist PathToDiffX86Binary
   #pragma error PathToDiffX86Binary + " does not exist, please build it first."
 #endif
 
-#define PathToDiffX64Binary "..\..\git-xltrail-diff-x64.exe"
+#define PathToDiffX64Binary "..\..\git-xl-diff-x64.exe"
 #ifnexist PathToDiffX64Binary
   #pragma error PathToDiffX64Binary + " does not exist, please build it first."
 #endif
 
-#define PathToMergeX86Binary "..\..\git-xltrail-merge-x86.exe"
+#define PathToMergeX86Binary "..\..\git-xl-merge-x86.exe"
 #ifnexist PathToMergeX86Binary
   #pragma error PathToMergeX86Binary + " does not exist, please build it first."
 #endif
 
-#define PathToMergeX64Binary "..\..\git-xltrail-merge-x64.exe"
+#define PathToMergeX64Binary "..\..\git-xl-merge-x64.exe"
 #ifnexist PathToMergeX64Binary
   #pragma error PathToMergeX64Binary + " does not exist, please build it first."
 #endif
@@ -37,8 +37,8 @@
 #define MyAppVersion RemoveFileExt(MyVersionInfoVersion)
 
 #define MyAppPublisher "Zoomer Analytics LLC"
-#define MyAppURL "https://www.xltrail.com/git-xltrail"
-#define MyAppFilePrefix "git-xltrail-windows"
+#define MyAppURL "https://www.xltrail.com/git-xl"
+#define MyAppFilePrefix "git-xl-windows"
 
 [Setup]
 AppCopyright=Zoomer Analytics LLC
@@ -59,35 +59,35 @@ LicenseFile=..\..\LICENSE.md
 OutputBaseFilename={#MyAppFilePrefix}-{#MyAppVersion}
 OutputDir=..\..\
 PrivilegesRequired=none
-SetupIconFile=git-xltrail-logo.ico
+SetupIconFile=git-xl-logo.ico
 SolidCompression=yes
-;UninstallDisplayIcon={app}\git-xltrail.exe
+;UninstallDisplayIcon={app}\git-xl.exe
 UsePreviousAppDir=no
 VersionInfoVersion={#MyVersionInfoVersion}
-;WizardImageFile=git-xltrail-wizard-image.bmp
-;WizardSmallImageFile=git-xltrail-logo.bmp
+;WizardImageFile=git-xl-wizard-image.bmp
+;WizardSmallImageFile=git-xl-logo.bmp
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Run]
-; Uninstalls the old Git xltrail version that used a different installer in a different location:
+; Uninstalls the old Git xl version that used a different installer in a different location:
 ;  If we don't do this, Git will prefer the old version as it is in the same directory as it.
-Filename: "{code:GetExistingGitInstallation}\git-xltrail-uninstaller.exe"; Parameters: "/S"; Flags: skipifdoesntexist
+Filename: "{code:GetExistingGitInstallation}\git-xl-uninstaller.exe"; Parameters: "/S"; Flags: skipifdoesntexist
 
 [Files]
-Source: {#PathToDiffX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-diff.exe"; Check: not Is64BitInstallMode
-Source: {#PathToDiffX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-diff.exe"; Check: Is64BitInstallMode
-Source: {#PathToMergeX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-merge.exe"; Check: not Is64BitInstallMode
-Source: {#PathToMergeX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail-merge.exe"; Check: Is64BitInstallMode
-Source: {#PathToX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail.exe"; Check: not Is64BitInstallMode
-Source: {#PathToX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xltrail.exe"; Check: Is64BitInstallMode
+Source: {#PathToDiffX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl-diff.exe"; Check: not Is64BitInstallMode
+Source: {#PathToDiffX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl-diff.exe"; Check: Is64BitInstallMode
+Source: {#PathToMergeX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl-merge.exe"; Check: not Is64BitInstallMode
+Source: {#PathToMergeX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl-merge.exe"; Check: Is64BitInstallMode
+Source: {#PathToX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl.exe"; Check: not Is64BitInstallMode
+Source: {#PathToX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl.exe"; Check: Is64BitInstallMode
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: IsAdminLoggedOn and NeedsAddPath('{app}')
-Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "GIT_XLTRAIL_PATH"; ValueData: "{app}"; Check: IsAdminLoggedOn
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "GIT_XL_PATH"; ValueData: "{app}"; Check: IsAdminLoggedOn
 Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: (not IsAdminLoggedOn) and NeedsAddPath('{app}')
-Root: HKCU; Subkey: "Environment"; ValueType: string; ValueName: "GIT_XLTRAIL_PATH"; ValueData: "{app}"; Check: not IsAdminLoggedOn
+Root: HKCU; Subkey: "Environment"; ValueType: string; ValueName: "GIT_XL_PATH"; ValueData: "{app}"; Check: not IsAdminLoggedOn
 
 [Code]
 function GetDefaultDirName(Dummy: string): string;
@@ -100,7 +100,7 @@ begin
 end;
 
 // Uses cmd to parse and find the location of Git through the env vars.
-// Currently only used to support running the uninstaller for the old Git xltrail version.
+// Currently only used to support running the uninstaller for the old Git XL version.
 function GetExistingGitInstallation(Value: string): string;
 var
   TmpFileName: String;
@@ -154,20 +154,20 @@ begin
     Result := Pos(';' + UpperCase(ParamExpanded) + '\;', ';' + UpperCase(OrigPath) + ';') = 0;
 end;
 
-// Runs the xltrail initialization.
-procedure InstallGitxltrail();
+// Runs the xl initialization.
+procedure InstallGitXl();
 var
   ResultCode: integer;
 begin
   Exec(
     ExpandConstant('{cmd}'),
-    ExpandConstant('/C ""{app}\git-xltrail.exe" install"'),
+    ExpandConstant('/C ""{app}\git-xl.exe" install"'),
     '', SW_HIDE, ewWaitUntilTerminated, ResultCode
   );
   if not ResultCode = 1 then
     MsgBox(
-    'Git xltrail was not able to automatically initialize itself. ' +
-    'Please run "git xltrail install" from the commandline.', mbInformation, MB_OK);
+    'Git XL was not able to automatically initialize itself. ' +
+    'Please run "git xl install" from the commandline.', mbInformation, MB_OK);
 end;
 
 // Event function automatically called when uninstalling:
@@ -177,7 +177,7 @@ var
 begin
   Exec(
     ExpandConstant('{cmd}'),
-    ExpandConstant('/C ""{app}\git-xltrail.exe" uninstall"'),
+    ExpandConstant('/C ""{app}\git-xl.exe" uninstall"'),
     '', SW_HIDE, ewWaitUntilTerminated, ResultCode
   );
   Result := True;

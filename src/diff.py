@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     colorama.init(strip=False)
 
-    print(Style.BRIGHT + 'diff --xltrail ' + 'a/' + workbook_name + ' b/' + workbook_name)
+    print(Style.BRIGHT + 'diff --xl ' + 'a/' + workbook_name + ' b/' + workbook_name)
     for diff in diffs:
         print(Style.BRIGHT + diff['a'])
         print(Style.BRIGHT + diff['b'])

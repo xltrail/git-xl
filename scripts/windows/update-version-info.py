@@ -37,24 +37,24 @@ s = f"""VSVersionInfo(
       StringTable(
         u'040904B0',
         [StringStruct(u'CompanyName', u'Zoomer Analytics LLC'),
-        StringStruct(u'FileDescription', u'Git xltrail'),
+        StringStruct(u'FileDescription', u'Git XL'),
         StringStruct(u'FileVersion', u'{major}.{minor}.{patch}'),
-        StringStruct(u'InternalName', u'git-xltrail'),
+        StringStruct(u'InternalName', u'git-xl'),
         StringStruct(u'LegalCopyright', u'Zoomer Analytics LLC'),
-        StringStruct(u'OriginalFilename', u'git-xltrail'),
-        StringStruct(u'ProductName', u'Git xltrail'),
+        StringStruct(u'OriginalFilename', u'git-xl'),
+        StringStruct(u'ProductName', u'Git XL'),
         StringStruct(u'ProductVersion', u'{major}.{minor}.{patch}')])
       ]), 
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]
 )"""
 
-# update 'git-xltrail-version-info.py
-path = os.path.join(base_directory, 'git-xltrail-version-info.py')
+# update 'git-xl-version-info.py
+path = os.path.join(base_directory, 'git-xl-version-info.py')
 with open(path, 'w') as f:
     f.write(s)
 
-# update git-xltrail.py (VERSION and COMMIT)
+# update git-xl.py (VERSION and COMMIT)
 path = 'src\\cli.py'
 with open(path, 'r') as f:
     s = f.read()
