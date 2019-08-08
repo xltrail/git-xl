@@ -72,7 +72,7 @@ deploy:
   release: $(APPVEYOR_REPO_TAG_NAME)
   description: 'Git XL $(APPVEYOR_REPO_TAG_NAME)'
   auth_token:
-    secure: u1oi+34ucFzW+B5tKlGUMP2NjPISw4G61InbYVF3qYq6onAC4+rA92XRn+aDhMEW
+    secure: 9GWBZaQOmJ9Ex2gPWJ+vf8aVVbKM7lvu/cCvs8xlQppaS97LptyDjZIIaWbUEuTI
   artifact: /git-xl-windows-.*\.exe/
   draft: false
   prerelease: false
