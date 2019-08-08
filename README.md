@@ -1,4 +1,6 @@
-# xltrail client - A Git Extension for Excel
+# Git XL - A Git Extension for Excel
+
+(Note: Git XL was previously called "git-xltrail")
 
 | Windows | macOS |
 | :---- | :------ |
@@ -7,35 +9,35 @@
 [1]: https://ci.appveyor.com/api/projects/status/gr093ijhqwtmp5s9/branch/master?svg=true
 
 
-Git xltrail is an open-source Git command line extension for managing Excel workbook files in Git.
+Git XL is an open-source Git command line extension for managing Excel workbook files in Git.
 
-The extension makes `git diff` and `git merge` work for Excel workbooks (xls, xlt, xla, xlam, xlsx, xlsm, xlsb, xltx, xltm). Git xltrail does not require Excel as it works directly on the workbook file.
+The extension makes `git diff` and `git merge` work for Excel VBA (xls, xlt, xla, xlam, xlsx, xlsm, xlsb, xltx, xltm). Git XL does not require Excel as it works directly on the workbook file.
 
-With Git xltrail installed, Git can diff and merge Excel workbook files just like any other source code file.
+With Git XL installed, Git can diff and merge Excel VBA just like any other source code file.
 
 It is written in Python, with pre-compiled binaries available for Windows.
 
-Installation instructions and docs are available at [https://www.xltrail.com/client](https://www.xltrail.com/client).
+Installation instructions and docs are available at [https://www.xltrail.com/git-xl](https://www.xltrail.com/git-xl).
 
 
 ## Getting Started 
 
 ### Installation
-You can install the Git xltrail client on Windows, using the pre-complied binary installer.
+You can install the Git XL client on Windows, using the pre-complied binary installer.
 
 This repository can also be built-from-source using Python and PyInstaller.
 
-Git xltrail requires a global installation once per-machine. This can be done by
+Git XL requires a global installation once per-machine. This can be done by
 running:
 
 ```
-C:\Developer>git xltrail install
+C:\Developer>git xl install
 ```
 
-Alternatively, initialise Git xltrail locally (per repository), using the --local option, inside the root folder of your repository’s local working copy:
+Alternatively, initialise Git XL locally (per repository), using the --local option, inside the root folder of your repository’s local working copy:
 
 ```
-C:\Developer>git xltrail install --local
+C:\Developer>git xl install --local
 ```
 
 ### Usage
@@ -46,7 +48,7 @@ Get meaningful `git diff` output when comparing Excel workbook files containing 
 
 ```
 C:\Developer>git diff dev..master
-diff --xltrail a/Book1.xlsb b/Book1.xlsb
+diff --xl a/Book1.xlsb b/Book1.xlsb
 --- a/Book1.xlsb/VBA/Module/Module1
 +++ b/Book1.xlsb/VBA/Module/Module1
 @@ -1,4 +1,4 @@
@@ -76,7 +78,7 @@ Merge made by the 'recursive' strategy.
 List all workbooks in your repository and get meta data on workbook content.
 
 ```
-C:\Developer>git xltrail ls-files
+C:\Developer>git xl ls-files
 ./Book1.xlsb
     VBA/Document/ThisWorkbook
     VBA/Document/Sheet1
@@ -89,7 +91,7 @@ C:\Developer>git xltrail ls-files
 List all workbooks and content in your repository.
 
 ```
-C:\Developer>git xltrail ls-files -v
+C:\Developer>git xl ls-files -v
 ./Book1.xlsb
     VBA/Document/ThisWorkbook
         Option Explicit
@@ -122,9 +124,9 @@ C:\Developer>git xltrail ls-files -v
 
 ## Docs
 
-Docs are available at [https://www.xltrail.com/client](https://www.xltrail.com/client).
+Docs are available at [https://www.xltrail.com/git-xl](https://www.xltrail.com/git-xl).
 
 
 ## Contributing
 
-Please [open a new issue](https://github.com/ZoomerAnalytics/git-xltrail/issues) to report bugs or [create a pull request](https://github.com/ZoomerAnalytics/git-xltrail/pulls) to send patches.
+Please [open a new issue](https://github.com/xlwings/git-xl/issues) to report bugs or [create a pull request](https://github.com/xlwings/git-xl/pulls) to send patches.
