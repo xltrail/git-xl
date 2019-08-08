@@ -652,6 +652,9 @@ def merge_workbook(filename, x, a, b):
             else:
                 print(f'--- a/{filename}/VBA/{m.type}/{m.name} +++ b/{filename}/VBA/{m.type}/{m.name}')
 
+    # there could be merge conflicts outside VBA (which we do not consider yet)
+    print(f'There might be CONFLICTs in sheets, please check and merge manually')
+
     wb_a.save()
 
     # rename back into original filename, otherwise git won't like it
@@ -659,9 +662,11 @@ def merge_workbook(filename, x, a, b):
     os.rename(b, b_)
     os.rename(x, x_)
 
-    if conflict:
-        sys.exit(1)
+    # TODO: we do not no whether there is NO conflict (ie non-VBA conflicts)
+    # if conflict:
+    #     sys.exit(1)
 
+    sys.exit(1)
 
 
 if __name__ == '__main__':
