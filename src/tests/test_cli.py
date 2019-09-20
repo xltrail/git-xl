@@ -141,6 +141,9 @@ class TestGlobalInstaller(TestCase):
     @mock.patch('cli.Installer.get_global_gitconfig_dir')
     @mock.patch('cli.Installer.get_git_ignore_path')
     def test_global_gitattributes_path(self, mock_get_git_ignore_path, get_global_gitconfig_dir, mock_run):
+        mock_completed_process = mock.Mock()
+        mock_completed_process.configure_mock(**{'stdout': '.gitconfig'})
+        mock_run.return_value = mock_completed_process
         installer = cli.Installer(mode='global')
         self.assertEqual(mock_run.call_count, 1)
         mock_run.assert_called_once_with(['git', 'config', '--global', '--get', 'core.attributesfile'], cwd=None, stderr=-1, stdout=-1, universal_newlines=True)
