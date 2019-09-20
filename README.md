@@ -23,7 +23,7 @@ Installation instructions and docs are available at [https://www.xltrail.com/git
 ## Getting Started 
 
 ### Installation
-You can install the Git XL client on Windows, using the pre-complied binary installer.
+You can install the Git XL client on Windows, using the pre-compiled binary installer.
 
 This repository can also be built-from-source using Python and PyInstaller.
 
