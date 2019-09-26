@@ -140,7 +140,7 @@ class Installer:
         # check if core.attributesfile is configured
         core_attributesfile = self.execute(['--get', 'core.attributesfile']).split('\n')[0]
         if core_attributesfile:
-            return core_attributesfile
+            return os.path.expanduser(core_attributesfile)
 
         # put .gitattributes into same directory as global .gitconfig
         return os.path.join(self.git_global_config_dir, '.gitattributes')
@@ -152,7 +152,7 @@ class Installer:
         # check if core.excludesfile is configured
         core_excludesfile = self.execute(['--get', 'core.excludesfile']).split('\n')[0]
         if core_excludesfile:
-            return core_excludesfile
+            return os.path.expanduser(core_excludesfile)
 
         # put .gitattributes into same directory as global .gitconfig
         return os.path.join(self.git_global_config_dir, '.gitignore')
