@@ -22,8 +22,8 @@ if __name__ == '__main__':
         _, numlines, workbook_name, workbook_b, _, _, workbook_a, _, _ = sys.argv
         numlines = int(numlines)
 
-    path_workbook_a = os.path.abspath(workbook_a) if workbook_a != 'nul' else None
-    path_workbook_b = os.path.abspath(workbook_b) if workbook_b != 'nul' else None
+    path_workbook_a = os.path.abspath(workbook_a) if workbook_a != 'nul' and workbook_a != '/dev/null' else None
+    path_workbook_b = os.path.abspath(workbook_b) if workbook_b != 'nul' and workbook_b != '/dev/null' else None
 
     workbook_a = Workbook(path_workbook_a) if path_workbook_a is not None else None
     workbook_b = Workbook(path_workbook_b) if path_workbook_b is not None else None
