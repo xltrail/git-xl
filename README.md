@@ -9,13 +9,13 @@
 [1]: https://ci.appveyor.com/api/projects/status/gr093ijhqwtmp5s9/branch/master?svg=true
 
 
-Git XL is an open-source Git command line extension for managing Excel workbook files in Git.
+Git XL is a Git command line extension for managing Excel workbook files.
 
 The extension makes `git diff` and `git merge` work for Excel VBA (xls, xlt, xla, xlam, xlsx, xlsm, xlsb, xltx, xltm). Git XL does not require Excel as it works directly on the workbook file.
 
 With Git XL installed, Git can diff and merge Excel VBA just like any other source code file.
 
-It is written in Python, with pre-compiled binaries available for Windows.
+It is a Python wrapper around our proprietary dll `xltrail-core.dll`, with pre-compiled binaries available for Windows. We are working to bring our binary to other platforms (like macOS).
 
 Installation instructions and docs are available at [https://www.xltrail.com/git-xl](https://www.xltrail.com/git-xl).
 
@@ -25,7 +25,7 @@ Installation instructions and docs are available at [https://www.xltrail.com/git
 ### Installation
 You can install the Git XL client on Windows, using the pre-compiled binary installer.
 
-This repository can also be built-from-source using Python and PyInstaller.
+This repository can also be built-from-source using Python and PyInstaller, note it still requires our pre-compiled dll `xltrail-core.dll` committed in this repo to work.
 
 Git XL requires a global installation once per-machine. This can be done by
 running:
@@ -129,4 +129,4 @@ Docs are available at [https://www.xltrail.com/git-xl](https://www.xltrail.com/g
 
 ## Contributing
 
-Please [open a new issue](https://github.com/xlwings/git-xl/issues) to report bugs or [create a pull request](https://github.com/xlwings/git-xl/pulls) to send patches.
+Please [open a new issue](https://github.com/xlwings/git-xl/issues) to report bugs or [create a pull request](https://github.com/xlwings/git-xl/pulls) to send patches.  Note: at this time we are not releasing the source of `xltrail-core.dll` so contributions can only be made against the wrapper.
