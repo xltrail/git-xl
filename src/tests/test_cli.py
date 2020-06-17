@@ -1,4 +1,3 @@
-import sys
 import cli
 from io import StringIO
 from unittest import TestCase, mock
@@ -17,23 +16,17 @@ class TestLocalInstaller(TestCase):
     @mock.patch('cli.is_git_repository', return_value=True)
     @mock.patch('cli.os.path.exists', return_value=False)
     @mock.patch('builtins.open', new_callable=mock.mock_open)
-    def test_can_install_when_files_do_not_exist(self, mock_file_open, mock_path_exists, \
-        mock_is_git_repository, mock_is_frozen, mock_run):
+    def test_can_install_when_files_do_not_exist(self, mock_file_open, mock_path_exists,
+                                                 mock_is_git_repository, mock_is_frozen, mock_run):
         installer = cli.Installer(mode='local', path='\\path\\to\\repository')
         installer.install()
         mock_run.assert_has_calls([
             mock.call(['git', 'config', 'diff.xl.command', 'git-xl-diff.exe'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True),
-            mock.call(['git', 'config', 'merge.xl.name', 'xl merge driver for Excel workbooks'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True),
-            mock.call(['git', 'config', 'merge.xl.driver', 'git-xl-merge.exe %P %O %A %B'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True)
         ])
         mock_file_open.assert_has_calls([
             mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
             mock.call().__enter__(),
             mock.call().writelines('*.xla diff=xl\n*.xlam diff=xl\n*.xls diff=xl\n*.xlsb diff=xl\n*.xlsm diff=xl\n*.xlsx diff=xl\n*.xlt diff=xl\n*.xltm diff=xl\n*.xltx diff=xl'),
-            mock.call().__exit__(None, None, None),
-            mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
-            mock.call().__enter__(),
-            mock.call().writelines('*.xla merge=xl\n*.xlam merge=xl\n*.xls merge=xl\n*.xlsb merge=xl\n*.xlsm merge=xl\n*.xlsx merge=xl\n*.xlt merge=xl\n*.xltm merge=xl\n*.xltx merge=xl'),
             mock.call().__exit__(None, None, None),
             mock.call('\\path\\to\\repository\\.gitignore', 'w'),
             mock.call().__enter__(),
@@ -46,36 +39,30 @@ class TestLocalInstaller(TestCase):
     @mock.patch('cli.is_git_repository', return_value=True)
     @mock.patch('cli.os.path.exists', return_value=True)
     @mock.patch('builtins.open', new_callable=mock.mock_open, read_data='something\n')
-    def test_can_install_when_files_exist(self, mock_file_open, mock_path_exists, \
-        mock_is_git_repository, mock_is_frozen, mock_run):
+    def test_can_install_when_files_exist(self, mock_file_open, mock_path_exists,
+                                          mock_is_git_repository, mock_is_frozen, mock_run):
         installer = cli.Installer(mode='local', path='\\path\\to\\repository')
         installer.install()
         mock_run.assert_has_calls([
-            mock.call(['git', 'config', 'diff.xl.command', 'git-xl-diff.exe'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True),
-            mock.call(['git', 'config', 'merge.xl.name', 'xl merge driver for Excel workbooks'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True),
-            mock.call(['git', 'config', 'merge.xl.driver', 'git-xl-merge.exe %P %O %A %B'], cwd='\\path\\to\\repository', stderr=-1, stdout=-1, universal_newlines=True)
+            mock.call(['git', 'config', 'diff.xl.command', 'git-xl-diff.exe'], cwd='\\path\\to\\repository', stderr=-1,
+                      stdout=-1, universal_newlines=True)
         ])
         mock_file_open.assert_has_calls([
             mock.call('\\path\\to\\repository\\.gitattributes', 'r'),
             mock.call().__enter__(),
             mock.call().read(),
             mock.call().__exit__(None, None, None),
+
             mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
             mock.call().__enter__(),
             mock.call().writelines('*.xla diff=xl\n*.xlam diff=xl\n*.xls diff=xl\n*.xlsb diff=xl\n*.xlsm diff=xl\n*.xlsx diff=xl\n*.xlt diff=xl\n*.xltm diff=xl\n*.xltx diff=xl\nsomething'),
             mock.call().__exit__(None, None, None),
-            mock.call('\\path\\to\\repository\\.gitattributes', 'r'),
-            mock.call().__enter__(),
-            mock.call().read(),
-            mock.call().__exit__(None, None, None),
-            mock.call('\\path\\to\\repository\\.gitattributes', 'w'),
-            mock.call().__enter__(),
-            mock.call().writelines('*.xla merge=xl\n*.xlam merge=xl\n*.xls merge=xl\n*.xlsb merge=xl\n*.xlsm merge=xl\n*.xlsx merge=xl\n*.xlt merge=xl\n*.xltm merge=xl\n*.xltx merge=xl\nsomething'),
-            mock.call().__exit__(None, None, None),
+
             mock.call('\\path\\to\\repository\\.gitignore', 'r'),
             mock.call().__enter__(),
             mock.call().read(),
             mock.call().__exit__(None, None, None),
+
             mock.call('\\path\\to\\repository\\.gitignore', 'w'),
             mock.call().__enter__(),
             mock.call().writelines('something\n~$*.xla\n~$*.xlam\n~$*.xls\n~$*.xlsb\n~$*.xlsm\n~$*.xlsx\n~$*.xlt\n~$*.xltm\n~$*.xltx'),
@@ -150,7 +137,7 @@ class TestGlobalInstaller(TestCase):
 
 
 class TestHelp(TestCase):
-    
+
     @mock.patch('sys.stdout', new_callable=StringIO)
     def test_generic_help(self, mock_stdout):
         command_parser = cli.CommandParser(['help'])

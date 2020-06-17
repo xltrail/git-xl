@@ -27,17 +27,13 @@ install:
 
 build_script:
   - C:\Python36\python .\scripts\windows\update-version-info.py
-  - C:\Python36\Scripts\pyinstaller --onefile .\src\diff.py --name git-xl-diff-x86.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico --add-data .\src\xltrail-core.dll;.
+  - C:\Python36\Scripts\pyinstaller --onefile .\src\diff.py --name git-xl-diff-x86.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
   - mv dist\git-xl-diff-x86.exe git-xl-diff-x86.exe
-  - C:\Python36-x64\Scripts\pyinstaller --onefile .\src\diff.py --name git-xl-diff-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico --add-data .\src\xltrail-core.dll;.
+  - C:\Python36-x64\Scripts\pyinstaller --onefile .\src\diff.py --name git-xl-diff-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
   - mv dist\git-xl-diff-x64.exe git-xl-diff-x64.exe
-  - C:\Python36\Scripts\pyinstaller --onefile .\src\merge.py --name git-xl-merge-x86.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico --add-data .\src\xltrail-core.dll;.
-  - mv dist\git-xl-merge-x86.exe git-xl-merge-x86.exe
-  - C:\Python36-x64\Scripts\pyinstaller --onefile .\src\merge.py --name git-xl-merge-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico --add-data .\src\xltrail-core.dll;.
-  - mv dist\git-xl-merge-x64.exe git-xl-merge-x64.exe
-  - C:\Python36\Scripts\pyinstaller --onefile .\src\cli.py --name git-xl-x86.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico --add-data .\src\xltrail-core.dll;.
+  - C:\Python36\Scripts\pyinstaller --onefile .\src\cli.py --name git-xl-x86.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
   - mv dist\git-xl-x86.exe git-xl-x86.exe
-  - C:\Python36-x64\Scripts\pyinstaller --onefile .\src\cli.py --name git-xl-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico --add-data .\src\xltrail-core.dll;.
+  - C:\Python36-x64\Scripts\pyinstaller --onefile .\src\cli.py --name git-xl-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
   - mv dist\git-xl-x64.exe git-xl-x64.exe
 
 after_build:
@@ -64,8 +60,7 @@ artifacts:
   - path: git-xl-x64.exe
   - path: git-xl-diff-x86.exe
   - path: git-xl-diff-x64.exe
-  - path: git-xl-merge-x86.exe
-  - path: git-xl-merge-x64.exe
+
 
 deploy:
 - provider: GitHub

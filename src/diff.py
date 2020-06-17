@@ -1,13 +1,32 @@
 import sys
 import os
-import shutil
-import colorama
-import clr
 from difflib import unified_diff
+
+import colorama
+from oletools.olevba3 import VBA_Parser
 from colorama import Fore, Back, Style, init
 
-clr.AddReference('xltrail-core')
-from xltrail.core import Workbook 
+
+def get_vba(workbook):
+    vba_parser = VBA_Parser(workbook)
+    vba_modules = vba_parser.extract_all_macros() if vba_parser.detect_vba_macros() else []
+
+    modules = {}
+
+    for _, _, _, content in vba_modules:
+        decoded_content = content.decode('latin-1')
+        lines = []
+        if '\r\n' in decoded_content:
+            lines = decoded_content.split('\r\n')
+        else:
+            lines = decoded_content.split('\n')
+        if lines:
+            name = lines[0].replace('Attribute VB_Name = ', '').strip('"')
+            content = [line for line in lines[1:] if not (
+                line.startswith('Attribute') and 'VB_' in line)]
+            non_empty_lines_of_code = len([c for c in content if c])
+            modules[name] = '\n'.join(content)
+    return modules
 
 
 if __name__ == '__main__':
@@ -25,62 +44,30 @@ if __name__ == '__main__':
     path_workbook_a = os.path.abspath(workbook_a) if workbook_a != 'nul' and workbook_a != '/dev/null' else None
     path_workbook_b = os.path.abspath(workbook_b) if workbook_b != 'nul' and workbook_b != '/dev/null' else None
 
-    workbook_a = Workbook(path_workbook_a) if path_workbook_a is not None else None
-    workbook_b = Workbook(path_workbook_b) if path_workbook_b is not None else None
+    workbook_a_modules = get_vba(path_workbook_a)
+    workbook_b_modules = {} if workbook_b == 'nul' else get_vba(path_workbook_b)
 
     diffs = []
-
-    # sheets
-    a_sheets = {} if workbook_a is None else dict([(i.name, i) for i in workbook_a.worksheets])
-    b_sheets = {} if workbook_b is None else dict([(i.name, i) for i in workbook_b.worksheets])
-
-    for a_name, a_sheet in a_sheets.items():
-        if a_name not in b_sheets:
+    for module_a, vba_a in workbook_a_modules.items():
+        if module_a not in workbook_b_modules:
             diffs.append({
                 'a': '--- /dev/null',
-                'b': '+++ b/' + workbook_name + '/Worksheets/' + a_name,
-                'diff': Fore.GREEN + '+' + str(a_sheet.cells.Count) + ' cell' + ('' if a_sheet.cells.Count == 1 else 's')
+                'b': '+++ b/' + workbook_name + '/VBA/' + module_a,
+                'diff': '\n'.join([Fore.GREEN + '+' + line for line in vba_a.split('\n')])
             })
-        elif a_sheet.digest != b_sheets[a_name].digest:
-            b_sheet = b_sheets[a_name]
+        elif vba_a != workbook_b_modules[module_a]:
             diffs.append({
-                'a': '--- a/' + workbook_name + '/Worksheets/' + a_name,
-                'b': '+++ b/' + workbook_name + '/Worksheets/' + a_name,
-                'diff': Fore.RED + '-' + str(b_sheet.cells.Count) + ' cell' + ('' if b_sheet.cells.Count == 1 else 's') + '\n' + Fore.GREEN + '+' + str(a_sheet.cells.Count) + ' cell' + ('' if a_sheet.cells.Count == 1 else 's')
+                'a': '--- a/' + workbook_name + '/VBA/' + module_a,
+                'b': '+++ b/' + workbook_name + '/VBA/' + module_a,
+                'diff': '\n'.join([(Fore.RED if line.startswith('-') else (Fore.GREEN if line.startswith('+') else (Fore.CYAN if line.startswith('@') else ''))) + line.strip('\n') for line in list(unified_diff(workbook_b_modules[module_a].split('\n'), vba_a.split('\n'), n=numlines))[2:]])
             })
 
-    for b_name, b_sheet in b_sheets.items():
-        if b_name not in a_sheets:
+    for module_b, vba_b in workbook_b_modules.items():
+        if module_b not in workbook_a_modules:
             diffs.append({
-                'a': '--- b/' + workbook_name + '/Worksheet/' + b_name,
+                'a': '--- b/' + workbook_name + '/VBA/' + module_b,
                 'b': '+++ /dev/null',
-                'diff': Fore.RED + '-' + str(b_sheet.cells.Count) + ' cell' + ('' if b_sheet.cells.Count == 1 else 's')
-            })
-
-
-    # VBA modules
-    a_modules = {} if workbook_a is None else dict([(m.name, m) for m in workbook_a.vba_modules])
-    b_modules = {} if workbook_b is None else dict([(m.name, m) for m in workbook_b.vba_modules])
-    for module_a, vba_a in a_modules.items():
-        if module_a not in b_modules:
-            diffs.append({
-                'a': '--- /dev/null',
-                'b': '+++ b/' + workbook_name + '/VBA/' + vba_a.type + '/' + module_a,
-                'diff': '\n'.join([Fore.GREEN + '+' + line for line in vba_a.content.split('\n')])
-            })
-        elif vba_a.digest != b_modules[module_a].digest:
-            diffs.append({
-                'a': '--- a/' + workbook_name + '/VBA/' + vba_a.type + '/' + module_a,
-                'b': '+++ b/' + workbook_name + '/VBA/' + vba_a.type + '/' + module_a,
-                'diff': '\n'.join([(Fore.RED if line.startswith('-') else (Fore.GREEN if line.startswith('+') else (Fore.CYAN if line.startswith('@') else ''))) + line.strip('\n') for line in list(unified_diff(b_modules[module_a].content.split('\n'), vba_a.content.split('\n'), n=numlines))[2:]])
-            })
-
-    for module_b, vba_b in b_modules.items():
-        if module_b not in a_modules:
-            diffs.append({
-                'a': '--- b/' + workbook_name + '/VBA/' + vba_b.type + '/' + module_b,
-                'b': '+++ /dev/null',
-                'diff': '\n'.join([Fore.RED + '-' + line for line in vba_b.content.split('\n')])
+                'diff': '\n'.join([Fore.RED + '-' + line for line in vba_b.split('\n')])
             })
 
 

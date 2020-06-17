@@ -2,13 +2,8 @@
 import sys
 import os
 import fnmatch
-import argparse
 import subprocess
-import clr
 import colorama
-
-clr.AddReference('xltrail-core')
-from xltrail.core import Workbook
 
 
 VERSION = '0.0.0'
@@ -16,7 +11,6 @@ GIT_COMMIT = 'dev'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm']
 GIT_ATTRIBUTES_DIFFER = ['*.' + file_ext + ' diff=xl' for file_ext in FILE_EXTENSIONS]
-GIT_ATTRIBUTES_MERGER = ['*.' + file_ext + ' merge=xl' for file_ext in FILE_EXTENSIONS]
 GIT_IGNORE = ['~$*.' + file_ext for file_ext in FILE_EXTENSIONS]
 
 
@@ -39,13 +33,10 @@ class Installer:
         # determine if running as exe or in dev mode
         if is_frozen():
             self.GIT_XL_DIFF = 'git-xl-diff.exe'
-            self.GIT_XL_MERGE = 'git-xl-merge.exe'
         else:
             executable_path = sys.executable.replace('\\', '/')
             differ_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'diff.py').replace('\\', '/')
-            merger_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'merge.py').replace('\\', '/')
             self.GIT_XL_DIFF = f'{executable_path} {differ_path}'
-            self.GIT_XL_MERGE = f'{executable_path} {merger_path}'
 
         if mode == 'global' and path:
             raise ValueError('must not specify repository path when installing globally')
@@ -70,18 +61,13 @@ class Installer:
         # 1. gitconfig: set-up diff.xl.command
         self.execute(['diff.xl.command', self.GIT_XL_DIFF])
 
-        # 2. gitconfig: merge-driver
-        self.execute(['merge.xl.name', 'xl merge driver for Excel workbooks'])
-        self.execute(['merge.xl.driver', f'{self.GIT_XL_MERGE} %P %O %A %B'])
-
-        # 3. set-up gitattributes (define custom differ and merger)
+        # 2. set-up gitattributes (define custom differ)
         self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_DIFFER, operation='SET')
-        self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_MERGER, operation='SET')
 
-        # 4. set-up gitignore (define differ for Excel file formats)
+        # 3. set-up gitignore (define differ for Excel file formats)
         self.update_git_file(path=self.git_ignore_path, keys=GIT_IGNORE, operation='SET')
 
-        # 5. update gitconfig (only relevent when running in `global` mode)
+        # 4. update gitconfig (only relevent when running in `global` mode)
         if self.mode == 'global':
             # set core.attributesfile
             self.execute(['core.attributesfile', self.git_attributes_path])
@@ -96,8 +82,6 @@ class Installer:
 
         # 2. gitattributes: remove keys
         gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_DIFFER,
-                                                  operation='REMOVE')
-        gitattributes_keys = self.update_git_file(path=self.git_attributes_path, keys=GIT_ATTRIBUTES_MERGER,
                                                   operation='REMOVE')
         # when in global mode and gitattributes is empty, update gitconfig and delete gitattributes
         if not gitattributes_keys:
@@ -190,7 +174,6 @@ git xl <command> [<args>]\n
 Git xl is a system for managing Excel workbook files in
 association with a Git repository. Git xl:
 * installs a special git-diff for Excel workbook files 
-* installs a special git-merge for Excel workbook files 
 * makes Git ignore temporary Excel files via .gitignore\n
 Commands
 --------\n
@@ -201,9 +184,7 @@ Commands
 * git xl install:
     Install Git xl.
 * git xl uninstall:
-    Uninstall Git xl.
-* git xl ls-files:
-    Show information about Excel workbooks content."""
+    Uninstall Git xl."""
 
 HELP_ENV = 'git xl env\n\nDisplay the current Git XL environment.'
 
@@ -227,15 +208,6 @@ replacement for Excel files and .gitignore globally.\n
     Removes the .gitignore filters and the git-diff Excel drop-in replacement
     in the local repository, instead globally."""
 
-HELP_LS_FILES = """git xl ls-files [options]\n
-List workbooks in repository:\n
-Without any options, git xl ls-files will list all workbooks in your repository
-and show list of VBA modules.\n
-Options:\n
-* -v:
-   Verbose. Shows VBA code.
-* -vv:
-   Very verbose. Shows VBA code and content hash."""
 
 class CommandParser:
 
@@ -304,39 +276,6 @@ class CommandParser:
         else:
             installer = Installer(mode='global')
         installer.uninstall()
-
-    def ls_files(self, *args):
-        def _ls_files(pattern):
-            files = []
-            for dirpath, dirnames, filenames in os.walk('.'):
-                if not filenames:
-                    continue
-
-                _files = fnmatch.filter(filenames, pattern)
-                if _files:
-                    for f in _files:
-                        files.append('{}/{}'.format(dirpath, f))
-            return files
-
-
-        if '-x' in args:
-            pattern = args[args.index('-x') + 1]
-            files = _ls_files(pattern)
-        else:
-            files = _ls_files('*.xls*')
-        colorama.init(strip=False)
-
-        for f in files:
-            wb = Workbook(f)
-            print(colorama.Fore.WHITE + colorama.Style.BRIGHT + f)
-            for vba_module in wb.vba_modules:
-                print(colorama.Fore.WHITE + colorama.Style.NORMAL + '    %s' % ('VBA/' + vba_module.type + '/' + vba_module.name))
-                if '-v' in args or '-vv' in args or '--verbose' in args:
-                    if '-vv' in args:
-                        print(colorama.Style.DIM + '    [%s]' % vba_module.digest[:7])
-                    for line in vba_module.content.split('\n'):
-                        print(colorama.Fore.YELLOW + colorama.Style.NORMAL + '        %s' % (line))
-            print('')
 
 
 if __name__ == '__main__':
