@@ -46,7 +46,7 @@ C:\Developer>git xl install --local
 
 Get meaningful `git diff` output when comparing Excel workbook files containing VBA code.
 
-```
+```diff
 C:\Developer>git diff dev..master
 diff --xl a/Book1.xlsb b/Book1.xlsb
 --- a/Book1.xlsb/VBA/Module/Module1
