@@ -8,5 +8,5 @@ Install Python dependencies via `pip install -r requirements.txt`.
 From within the repository's root folder run
 
 ```
-$ build.bat
+$ .\scripts\windows\build.bat
 ```

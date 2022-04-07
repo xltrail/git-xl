@@ -14,7 +14,7 @@ def get_vba(workbook):
     modules = {}
 
     for _, _, _, content in vba_modules:
-        decoded_content = content.decode('latin-1')
+        decoded_content = content
         lines = []
         if '\r\n' in decoded_content:
             lines = decoded_content.split('\r\n')
