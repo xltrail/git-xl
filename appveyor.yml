@@ -22,6 +22,8 @@ install:
   - cinst InnoSetup -y
   - nuget install secure-file -ExcludeVersion
   - secure-file\tools\secure-file -decrypt scripts\windows\key.p12.enc -secret %secure%
+  - C:\Python36\python -m pip install --upgrade pip
+  - C:\Python36-x64\python -m pip install --upgrade pip
   - C:\Python36\Scripts\pip install -r requirements.txt
   - C:\Python36-x64\Scripts\pip install -r requirements.txt
 
