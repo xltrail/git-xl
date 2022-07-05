@@ -2,13 +2,6 @@
 
 (Note: Git XL was previously called "git-xltrail")
 
-| Windows | macOS |
-| :---- | :------ |
-| ![Windows build status][1] | _not yet available_ |
-
-[1]: https://ci.appveyor.com/api/projects/status/gr093ijhqwtmp5s9/branch/master?svg=true
-
-
 Git XL is an open-source Git command line extension for managing Excel workbook files in Git.
 
 The extension makes `git diff` work for Excel VBA (xls, xlt, xla, xlam, xlsx, xlsm, xlsb, xltx, xltm). Git XL does not require Excel as it works directly on the workbook file.
