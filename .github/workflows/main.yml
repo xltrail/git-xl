@@ -60,7 +60,11 @@ jobs:
       run: |
         signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 git-xl-*.exe
         iscc scripts\windows\inno-setup-git-xl-installer.iss
-        mv git-xl-windows-0.0.0.exe dist\git-xl-windows-$env:VERSION_STRING.exe
+        if ($env:GITHUB_REF_TYPE -eq "tag"){
+          mv git-xl-windows-$env:VERSION_STRING.exe dist\git-xl-windows-$env:VERSION_STRING.exe
+        } else {
+          mv git-xl-windows-0.0.0.exe dist\git-xl-windows-$env:VERSION_STRING.exe
+        }
         signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 dist\git-xl-windows-$env:VERSION_STRING.exe
     - name: Upload artifacts (skipped for releases)
       if: github.event_name != 'release'
