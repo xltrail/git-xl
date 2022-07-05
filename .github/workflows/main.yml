@@ -56,7 +56,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: Package
-        path: git-xl-windows-*.exe
+        path: git-xl-windows-0.0.0.exe
 
 
 
