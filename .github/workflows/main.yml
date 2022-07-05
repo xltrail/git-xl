@@ -62,12 +62,27 @@ jobs:
         iscc scripts\windows\inno-setup-git-xl-installer.iss
         mv git-xl-windows-0.0.0.exe dist\git-xl-windows-$env:VERSION_STRING.exe
         signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 dist\git-xl-windows-$env:VERSION_STRING.exe
-    - name: Upload artifacts
+    - name: Upload artifacts (skipped for releases)
+      if: github.event_name != 'release'
       uses: actions/upload-artifact@v1
       with:
         name: Installer
         path: dist
-
-
-
-
+    - name: Upload Windows Installer to GitHub Release Page
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: dist/git-xl-windows-${{ env.VERSION_STRING }}.exe
+        asset_name: git-xl-windows-${{ env.VERSION_STRING }}.exe
+        asset_content_type: application/zip
+    - name: Trigger Netlify webhook
+      if: github.event_name == 'release'
+      shell: bash
+      run: |
+        
+        curl -X POST -d {} https://api.netlify.com/build_hooks/$NETLIFY_BUILD_HOOK
+      env:
+        NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
