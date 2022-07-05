@@ -1,0 +1,59 @@
+name: Build Pipeline
+
+on:
+  # Run on all pushed commits, PRs and when a new release is created
+  # Prevents duplicate pipeline runs as a release also pushes a tag
+  pull_request:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    # Prevent duplicate runs for own PRs
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+        architecture: 'x64'
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt
+    # - name: Get Certificate
+    #   id: write_file
+    #   uses: timheuer/base64-to-file@2d34558844bc851d6a653f79b3720f44dc6bff53
+    #   with:
+    #     fileName: 'cert.p12'
+    #     encodedString: ${{ secrets.CODESIGN_CERTIFICATE }}
+    - name: Set PATH for signtool
+      shell: bash
+      run: echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64" >> $GITHUB_PATH
+    # - name: Code Sign dlls
+    #   run: |
+    #     signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 xlwings32.dll xlwings64.dll
+    - name: Build Python Package
+      shell: bash
+      run: |
+        python .\scripts\windows\update-version-info.py
+        pyinstaller --onefile .\src\diff.py --name git-xl-diff-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
+        mv dist\git-xl-diff-x64.exe git-xl-diff-x64.exe
+        pyinstaller --onefile .\src\cli.py --name git-xl-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
+        mv dist\git-xl-x64.exe git-xl-x64.exe
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: Package
+        path: dist
+
+
+
+
