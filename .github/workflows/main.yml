@@ -28,18 +28,15 @@ jobs:
     - name: Install Python dependencies
       run: |
         pip install -r requirements.txt
-    # - name: Get Certificate
-    #   id: write_file
-    #   uses: timheuer/base64-to-file@2d34558844bc851d6a653f79b3720f44dc6bff53
-    #   with:
-    #     fileName: 'cert.p12'
-    #     encodedString: ${{ secrets.CODESIGN_CERTIFICATE }}
+    - name: Get Certificate
+      id: write_file
+      uses: timheuer/base64-to-file@2d34558844bc851d6a653f79b3720f44dc6bff53
+      with:
+        fileName: 'cert.p12'
+        encodedString: ${{ secrets.CODESIGN_CERTIFICATE }}
     - name: Set PATH for signtool
       shell: bash
       run: echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64" >> $GITHUB_PATH
-    # - name: Code Sign dlls
-    #   run: |
-    #     signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 xlwings32.dll xlwings64.dll
     - name: Build Python Package
       run: |
         python .\scripts\windows\update-version-info.py
@@ -50,8 +47,11 @@ jobs:
         # TODO: testing
         cp git-xl-diff-x64.exe git-xl-diff-x86.exe
         cp git-xl-x64.exe git-xl-x86.exe
-    - name: Build Installer
-      run: iscc scripts\windows\inno-setup-git-xl-installer.iss
+    - name: Sign exes and build installer
+      run: |
+        signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 git-xl-*.exe
+        iscc scripts\windows\inno-setup-git-xl-installer.iss
+        signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 git-xl-windows*.exe
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
