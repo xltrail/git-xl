@@ -1,0 +1,88 @@
+name: Build Pipeline
+
+on:
+  # Run on all pushed commits, PRs and when a new release is created
+  # Prevents duplicate pipeline runs as a release also pushes a tag
+  pull_request:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    # Prevent duplicate runs for own PRs
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+        architecture: 'x64'
+    - name: Set version string
+      shell: bash
+      run: |
+        if [ ${GITHUB_REF::9} = "refs/tags" ]; then
+          version_string=${GITHUB_REF:10}
+        else
+          version_string=${GITHUB_SHA::7}
+        fi;
+        echo "VERSION_STRING=$(echo $version_string)" >> $GITHUB_ENV
+    - name: Get Certificate
+      id: write_file
+      uses: timheuer/base64-to-file@2d34558844bc851d6a653f79b3720f44dc6bff53
+      with:
+        fileName: 'cert.p12'
+        encodedString: ${{ secrets.CODESIGN_CERTIFICATE }}
+    - name: Set PATH for signtool
+      shell: bash
+      run: echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64" >> $GITHUB_PATH
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: tests
+      run: |
+        python -m unittest discover src -vv
+    - name: Build Python Package
+      run: |
+        python .\scripts\windows\update-version-info.py
+        pyinstaller --onefile .\src\diff.py --name git-xl-diff-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
+        mv dist\git-xl-diff-x64.exe git-xl-diff-x64.exe
+        pyinstaller --onefile .\src\cli.py --name git-xl-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
+        mv dist\git-xl-x64.exe git-xl-x64.exe
+    - name: Sign exes and build installer
+      run: |
+        signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 git-xl-*.exe
+        iscc scripts\windows\inno-setup-git-xl-installer.iss
+        mv git-xl-windows-0.0.0.exe dist\git-xl-windows-$env:VERSION_STRING.exe
+        signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 dist\git-xl-windows-$env:VERSION_STRING.exe
+    - name: Upload artifacts (skipped for releases)
+      if: github.event_name != 'release'
+      uses: actions/upload-artifact@v1
+      with:
+        name: Installer
+        path: dist
+    - name: Upload Windows Installer to GitHub Release Page
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: dist/git-xl-windows-${{ env.VERSION_STRING }}.exe
+        asset_name: git-xl-windows-${{ env.VERSION_STRING }}.exe
+        asset_content_type: application/zip
+    - name: Trigger Netlify webhook
+      if: github.event_name == 'release'
+      shell: bash
+      run: |
+        
+        curl -X POST -d {} https://api.netlify.com/build_hooks/$NETLIFY_BUILD_HOOK
+      env:
+        NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
