@@ -51,7 +51,7 @@ jobs:
         cp git-xl-diff-x64.exe git-xl-diff-x86.exe
         cp git-xl-x64.exe git-xl-x86.exe
     - name: Build Installer
-        iscc scripts\windows\inno-setup-git-xl-installer.iss
+      run: iscc scripts\windows\inno-setup-git-xl-installer.iss
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
