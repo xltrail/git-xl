@@ -41,7 +41,6 @@ jobs:
     #   run: |
     #     signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 xlwings32.dll xlwings64.dll
     - name: Build Python Package
-      shell: bash
       run: |
         python .\scripts\windows\update-version-info.py
         pyinstaller --onefile .\src\diff.py --name git-xl-diff-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
