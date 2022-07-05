@@ -49,7 +49,6 @@ jobs:
     - name: tests
       run: |
         python -m unittest discover src -vv
-        python -m unittest discover src -vv
     - name: Build Python Package
       run: |
         python .\scripts\windows\update-version-info.py
@@ -57,9 +56,6 @@ jobs:
         mv dist\git-xl-diff-x64.exe git-xl-diff-x64.exe
         pyinstaller --onefile .\src\cli.py --name git-xl-x64.exe --version-file .\scripts\windows\git-xl-version-info.py --icon .\scripts\windows\git-xl-logo.ico
         mv dist\git-xl-x64.exe git-xl-x64.exe
-        # TODO: testing
-        cp git-xl-diff-x64.exe git-xl-diff-x86.exe
-        cp git-xl-x64.exe git-xl-x86.exe
     - name: Sign exes and build installer
       run: |
         signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 git-xl-*.exe

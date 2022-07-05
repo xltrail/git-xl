@@ -1,18 +1,8 @@
 #define MyAppName "Git XL"
 
-#define PathToX86Binary "..\..\git-xl-x86.exe"
-#ifnexist PathToX86Binary
-  #pragma error PathToX86Binary + " does not exist, please build it first."
-#endif
-
 #define PathToX64Binary "..\..\git-xl-x64.exe"
 #ifnexist PathToX64Binary
   #pragma error PathToX64Binary + " does not exist, please build it first."
-#endif
-
-#define PathToDiffX86Binary "..\..\git-xl-diff-x86.exe"
-#ifnexist PathToDiffX86Binary
-  #pragma error PathToDiffX86Binary + " does not exist, please build it first."
 #endif
 
 #define PathToDiffX64Binary "..\..\git-xl-diff-x64.exe"
@@ -20,8 +10,7 @@
   #pragma error PathToDiffX64Binary + " does not exist, please build it first."
 #endif
 
-; Arbitrarily choose the x86 executable here as both have the version embedded.
-#define MyVersionInfoVersion GetFileVersion(PathToX86Binary)
+#define MyVersionInfoVersion GetFileVersion(PathToX64Binary)
 
 ; Misuse RemoveFileExt to strip the 4th patch-level version number.
 #define MyAppVersion RemoveFileExt(MyVersionInfoVersion)
@@ -66,9 +55,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Filename: "{code:GetExistingGitInstallation}\git-xl-uninstaller.exe"; Parameters: "/S"; Flags: skipifdoesntexist
 
 [Files]
-Source: {#PathToDiffX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl-diff.exe"; Check: not Is64BitInstallMode
 Source: {#PathToDiffX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl-diff.exe"; Check: Is64BitInstallMode
-Source: {#PathToX86Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl.exe"; Check: not Is64BitInstallMode
 Source: {#PathToX64Binary}; DestDir: "{app}"; Flags: ignoreversion; DestName: "git-xl.exe"; Check: Is64BitInstallMode
 
 [Registry]
@@ -111,6 +98,7 @@ begin
       if Is64BitInstallMode then
         Result := Result + '\Git\mingw64\bin'
       else
+        // TOOD: Support for 32-bit has been removed
         Result := Result + '\Git\mingw32\bin';
       end else begin
         Result := ExtractFilePath(ExecStdOut);
