@@ -25,6 +25,17 @@ jobs:
       with:
         python-version: '3.6'
         architecture: 'x64'
+    - name: Set version string
+      shell: bash
+      run: |
+        if [ ${GITHUB_REF::9} = "refs/tags" ]; then
+          version_string=${GITHUB_REF:10}
+        else
+          version_string=${GITHUB_SHA::8}
+        fi;
+        echo "VERSION_STRING=$(echo $version_string)" >> $GITHUB_ENV
+    - name: Test
+      run: echo $VERSION_STRING
     - name: Install Python dependencies
       run: |
         pip install -r requirements.txt
