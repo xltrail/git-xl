@@ -25,10 +25,6 @@ jobs:
       with:
         python-version: '3.10'
         architecture: 'x64'
-    - name: tests
-      run: |
-        python -m unittest discover src -vv
-        python -m unittest discover src -vv
     - name: Set version string
       shell: bash
       run: |
@@ -38,9 +34,6 @@ jobs:
           version_string=${GITHUB_SHA::7}
         fi;
         echo "VERSION_STRING=$(echo $version_string)" >> $GITHUB_ENV
-    - name: Install Python dependencies
-      run: |
-        pip install -r requirements.txt
     - name: Get Certificate
       id: write_file
       uses: timheuer/base64-to-file@2d34558844bc851d6a653f79b3720f44dc6bff53
@@ -50,6 +43,13 @@ jobs:
     - name: Set PATH for signtool
       shell: bash
       run: echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64" >> $GITHUB_PATH
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: tests
+      run: |
+        python -m unittest discover src -vv
+        python -m unittest discover src -vv
     - name: Build Python Package
       run: |
         python .\scripts\windows\update-version-info.py
