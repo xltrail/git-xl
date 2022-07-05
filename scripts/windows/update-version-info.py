@@ -5,9 +5,12 @@ import re
 base_directory = os.path.join('scripts', 'windows')
 
 # read build number, repo tag name and git commit hash from env vars 
-build = os.getenv('APPVEYOR_BUILD_NUMBER', '0') 
-version = os.getenv('APPVEYOR_REPO_TAG_NAME', '0.0.0')
-commit = os.environ['APPVEYOR_REPO_COMMIT'][:7] if os.getenv('APPVEYOR_REPO_COMMIT') else 'dev'
+build = os.getenv('GITHUB_RUN_ATTEMPT', '0')
+if os.getenv('GITHUB_REF_TYPE') == 'tag':
+  version = os.environ['GITHUB_REF_NAME']
+else:
+  version = '0.0.0'
+commit = os.environ['GITHUB_SHA'][:7] if os.getenv('GITHUB_SHA') else 'dev'
 
 print('-----------')
 print('Version tag: %s' % version)
