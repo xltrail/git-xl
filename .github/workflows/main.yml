@@ -31,7 +31,7 @@ jobs:
         if [ ${GITHUB_REF::9} = "refs/tags" ]; then
           version_string=${GITHUB_REF:10}
         else
-          version_string=${GITHUB_SHA::8}
+          version_string=${GITHUB_SHA::7}
         fi;
         echo "VERSION_STRING=$(echo $version_string)" >> $GITHUB_ENV
     - name: Install Python dependencies
@@ -66,7 +66,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: Package
-        path: git-xl-windows-$env:VERSION_STRING.exe
+        path: git-xl-windows-${{ VERSION_STRING }}.exe
 
 
 
