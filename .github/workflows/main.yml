@@ -23,7 +23,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.6'
+        python-version: '3.10'
         architecture: 'x64'
     - name: Set version string
       shell: bash
@@ -34,8 +34,6 @@ jobs:
           version_string=${GITHUB_SHA::8}
         fi;
         echo "VERSION_STRING=$(echo $version_string)" >> $GITHUB_ENV
-    - name: Test
-      run: echo $VERSION_STRING
     - name: Install Python dependencies
       run: |
         pip install -r requirements.txt
@@ -62,7 +60,7 @@ jobs:
       run: |
         signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 git-xl-*.exe
         iscc scripts\windows\inno-setup-git-xl-installer.iss
-        mv git-xl-windows-0.0.0.exe git-xl-windows-$env:VERSION_STRING.exe 
+        mv git-xl-windows-0.0.0.exe git-xl-windows-$env:VERSION_STRING.exe
         signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 git-xl-windows*.exe
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
