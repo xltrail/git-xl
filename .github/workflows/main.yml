@@ -61,7 +61,7 @@ jobs:
         signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 git-xl-*.exe
         iscc scripts\windows\inno-setup-git-xl-installer.iss
         mv git-xl-windows-0.0.0.exe dist\git-xl-windows-$env:VERSION_STRING.exe
-        signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 git-xl-windows-$env:VERSION_STRING.exe
+        signtool sign /f ${{ steps.write_file.outputs.filePath }} /p ${{ secrets.CODESIGN_PASSWORD }} /tr http://timestamp.sectigo.com /td sha256 /fd SHA256 dist\git-xl-windows-$env:VERSION_STRING.exe
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
