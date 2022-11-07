@@ -4,9 +4,10 @@ import os
 import fnmatch
 import subprocess
 import colorama
+from .version import __version__
 
 
-VERSION = '0.0.0'
+VERSION = __version__
 GIT_COMMIT = 'dev'
 PYTHON_VERSION = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
 FILE_EXTENSIONS = ['xls', 'xlt', 'xla', 'xlam', 'xlsx', 'xlsm', 'xlsb', 'xltx', 'xltm']
