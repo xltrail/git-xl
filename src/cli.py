@@ -20,7 +20,7 @@ def is_frozen():
 
 def is_git_repository(path):
     cmd = subprocess.run(['git', 'rev-parse'], cwd=path, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                         universal_newlines=True)
+                         universal_newlines=True,encoding='utf-8')
     if not cmd.stderr.split('\n')[0]:
         return True
     return False
@@ -103,7 +103,7 @@ class Installer:
             command.append('--global')
         command += args
         return subprocess.run(command, cwd=self.path, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              universal_newlines=True).stdout
+                              universal_newlines=True,encoding='utf-8').stdout
 
     def get_global_gitconfig_dir(self):
         # put .gitattributes in same folder as global .gitconfig
