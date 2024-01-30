@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+export PYTHON_ARCH=$(python -c "import sys;print('x64' if sys.maxsize > 2**32 else 'x86')")
+
+python ./scripts/linux/update-version-info.py
+pyinstaller --onefile ./src/diff.py --name=git-xl-diff-$PYTHON_ARCH --version-file ./scripts/windows/git-xl-version-info.py --icon ./scripts/windows/git-xl-logo.ico
+pyinstaller --onefile ./src/cli.py --name=git-xl-$PYTHON_ARCH --version-file ./scripts/windows/git-xl-version-info.py --icon ./scripts/windows/git-xl-logo.ico
